@@ -172,6 +172,7 @@ export async function GET(req: Request) {
 
     // --- PAGE 8: FINAL VERIFICATION ---
     const page8 = pdfDoc.addPage([595.28, 841.89]);
+    const { width } = page8.getSize();
     drawBackground(page8);
     drawHeader(page8, 'SECTION_07 // FINAL_VERIFICATION', fontBold);
     
