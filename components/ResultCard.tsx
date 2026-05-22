@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { Archetype } from "@/lib/data";
-import { Share2, Download, Trophy, Target, Zap, Shield, Brain } from "lucide-react";
+import { Share2, Download, Trophy, Target, Zap, Shield, Brain, Fingerprint } from "lucide-react";
 import { useRef } from "react";
 
 interface ResultCardProps {
@@ -10,11 +10,6 @@ interface ResultCardProps {
 
 export default function ResultCard({ archetype }: ResultCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleDownload = async () => {
-    console.log("Capturing card for download...");
-    alert("In produzione, questo pulsante utilizza 'html-to-image' per generare un PNG ad alta risoluzione del tuo DNA.");
-  };
 
   const traits = [
     { label: "EGO", value: archetype.traits.ego, icon: <Trophy className="w-3 h-3" /> },
@@ -27,98 +22,89 @@ export default function ResultCard({ archetype }: ResultCardProps) {
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      className="relative w-full max-w-sm mx-auto bg-dna-dark border border-white/10 rounded-3xl p-8 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]"
+      initial={{ opacity: 0, y: 50, rotateY: 20 }}
+      animate={{ opacity: 1, y: 0, rotateY: 0 }}
+      className="relative w-full max-w-sm mx-auto glass-card rounded-[40px] p-10 overflow-hidden scanline shadow-[0_0_100px_rgba(0,0,0,1)]"
     >
-      {/* Dynamic Background Glow */}
+      {/* Background Accent */}
       <div 
-        className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] opacity-20"
+        className="absolute -top-40 -right-40 w-96 h-96 blur-[120px] opacity-30"
         style={{ backgroundColor: archetype.color }}
       />
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      
+      {/* Rarity Tag */}
+      <div className="absolute top-8 left-8">
+        <div className="px-3 py-1 border border-white/10 rounded-full bg-black/40 backdrop-blur-md">
+          <span className="text-[9px] font-esports text-white/60 tracking-widest uppercase">
+            Rarity: <span style={{ color: archetype.color }}>{archetype.rarity}%</span>
+          </span>
+        </div>
+      </div>
 
       {/* Header */}
-      <div className="text-center mb-8 relative z-10">
-        <span className="text-[10px] font-esports tracking-[0.4em] text-gray-500 uppercase block mb-2">
-          Gamer Identity Verified
-        </span>
+      <div className="text-center mt-12 mb-10">
         <h2 
-          className="text-4xl font-esports italic font-black uppercase text-glow tracking-tighter"
-          style={{ color: archetype.color }}
+          className="text-5xl font-esports italic font-black uppercase tracking-tighter leading-none mb-2"
+          style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
         >
           {archetype.name}
         </h2>
+        <span className="text-[10px] font-esports tracking-[0.4em] text-white/30 uppercase">
+          Neural Match Confirmed
+        </span>
       </div>
 
-      {/* Visual representation placeholder */}
-      <div className="relative h-48 flex items-center justify-center mb-8 z-10">
+      {/* Central Visual */}
+      <div className="relative h-56 flex items-center justify-center mb-10">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-32 h-32 rounded-full border border-white/5 animate-spin-slow" />
-          <div className="absolute w-40 h-40 rounded-full border border-white/5 animate-reverse-spin-slow" />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="w-48 h-48 rounded-full border border-white/5 border-dashed" 
+          />
+          <motion.div 
+            animate={{ rotate: -360 }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute w-56 h-56 rounded-full border border-white/5" 
+          />
         </div>
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, 5, -5, 0]
-          }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="text-6xl relative z-20 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-        >
-          🧬
-        </motion.div>
+        
+        <div className="relative z-10 w-32 h-32 flex items-center justify-center bg-black/40 rounded-full border border-white/10 backdrop-blur-xl group">
+          <Fingerprint className="w-16 h-16 text-white group-hover:scale-110 transition-transform duration-500" style={{ color: archetype.color }} />
+        </div>
       </div>
 
-      {/* Traits Grid */}
-      <div className="space-y-4 mb-10 relative z-10">
+      {/* Traits */}
+      <div className="space-y-5 mb-12">
         {traits.map((trait) => (
-          <div key={trait.label} className="group">
-            <div className="flex justify-between items-center text-[10px] font-esports tracking-widest text-gray-400 mb-1.5 uppercase">
-              <span className="flex items-center gap-2">
-                {trait.icon}
-                {trait.label}
-              </span>
+          <div key={trait.label}>
+            <div className="flex justify-between items-center text-[9px] font-esports text-white/40 mb-2 uppercase tracking-widest">
+              <span className="flex items-center gap-2">{trait.icon} {trait.label}</span>
               <span style={{ color: archetype.color }}>{trait.value}%</span>
             </div>
-            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${trait.value}%` }}
-                transition={{ duration: 1, delay: 0.5 }}
-                className="h-full rounded-full"
-                style={{ backgroundColor: archetype.color, boxShadow: `0 0 10px ${archetype.color}` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="h-full"
+                style={{ backgroundColor: archetype.color, boxShadow: `0 0 15px ${archetype.color}` }}
               />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Quote */}
-      <div className="text-center mb-10 relative z-10 px-4">
-        <p className="text-sm text-gray-300 italic font-light leading-relaxed">
-          "{archetype.quote}"
-        </p>
-      </div>
-
-      {/* Footer / Branding */}
-      <div className="flex justify-between items-center border-t border-white/5 pt-6 relative z-10">
-        <div className="flex flex-col">
-          <span className="text-[8px] font-esports text-gray-500 tracking-widest uppercase">Global Rarity</span>
-          <span className="text-sm font-esports text-white italic">{archetype.rarity}%</span>
+      {/* Branding */}
+      <div className="pt-8 border-t border-white/5 flex justify-between items-center">
+        <div>
+          <p className="text-[10px] font-esports text-white/20 uppercase tracking-widest mb-1">Generated by</p>
+          <p className="text-xs font-esports font-black italic tracking-tighter">PLAYER<span className="text-dna-neon">DNA</span></p>
         </div>
-        <div className="text-right">
-          <span className="text-[8px] font-esports text-dna-blue tracking-widest uppercase block mb-1">PLAYERDNA.GG</span>
-          <div className="flex gap-2 justify-end">
-            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-              <Share2 className="w-4 h-4 text-white" />
-            </button>
-            <button 
-              onClick={handleDownload}
-              className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-            >
-              <Download className="w-4 h-4 text-white" />
-            </button>
-          </div>
+        <div className="flex gap-3">
+          <button className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/5">
+            <Share2 className="w-5 h-5 text-white" />
+          </button>
         </div>
       </div>
     </motion.div>
