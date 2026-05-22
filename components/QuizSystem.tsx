@@ -6,8 +6,10 @@ import { calculateDNA } from "@/lib/engine";
 import { ChevronRight, Dna, Loader2, ShieldAlert } from "lucide-react";
 import ResultCard from "./ResultCard";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function QuizSystem() {
+  const { lang, t } = useLanguage();
   const [step, setStep] = useState(0); // 0: Start, 1: Quiz, 2: Loading, 3: Result
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<{ [key: string]: number }>({
@@ -73,14 +75,14 @@ export default function QuizSystem() {
             exit={{ opacity: 0, scale: 1.1 }}
             className="text-center z-10"
           >
-            <ShieldAlert className="w-20 h-20 text-dna-neon mx-auto mb-8 animate-pulse" />
+             <ShieldAlert className="w-20 h-20 text-dna-neon mx-auto mb-8 animate-pulse" />
             <h2 className="text-cyber text-5xl md:text-8xl mb-4 italic">IDENTITY_SCAN</h2>
             <p className="font-esports text-[10px] text-gray-500 tracking-[0.6em] mb-12 uppercase">Authorization Required: Access Granted</p>
             <button
               onClick={startQuiz}
               className="px-16 py-6 bg-dna-neon text-black font-esports text-xl tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_30px_rgba(0,242,255,0.4)]"
             >
-              Initialize Neural Map
+              {t.hero.start}
             </button>
           </motion.div>
         )}
@@ -95,8 +97,8 @@ export default function QuizSystem() {
           >
             <div className="mb-16">
               <div className="flex justify-between items-end mb-4 font-esports text-[10px] tracking-[0.4em] text-gray-600 uppercase">
-                <span>Sequence {currentQuestion + 1} / {QUESTIONS.length}</span>
-                <span className="text-dna-neon">Scanning Synapses...</span>
+                <span>{t.quiz.sequence} {currentQuestion + 1} / {QUESTIONS.length}</span>
+                <span className="text-dna-neon">{t.quiz.scanning}</span>
               </div>
               <div className="h-[3px] bg-white/5 w-full overflow-hidden">
                 <motion.div
@@ -108,19 +110,21 @@ export default function QuizSystem() {
             </div>
 
             <h3 className="text-4xl md:text-6xl font-esports italic font-black mb-16 uppercase leading-tight tracking-tighter">
-              {QUESTIONS[currentQuestion].text}
+              {lang === 'it' ? QUESTIONS[currentQuestion].text_it : QUESTIONS[currentQuestion].text}
             </h3>
 
             <div className="grid grid-cols-1 gap-4">
               {QUESTIONS[currentQuestion].options.map((option, idx) => (
                 <motion.button
                   key={idx}
-                  whileHover={{ x: 10, backgroundColor: "rgba(0, 242, 255, 0.05)" }}
+                  whileHover={{ x: 10, backgroundColor: "rgba(0, 242, 255, 0.08)", borderColor: "rgba(0, 242, 255, 0.4)" }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => handleAnswer(option.weights)}
-                  className="w-full p-8 text-left border border-white/5 bg-white/5 flex justify-between items-center group transition-all hover:border-dna-neon/30"
+                  className="w-full p-8 text-left border border-white/5 bg-white/5 flex justify-between items-center group transition-all duration-300"
                 >
-                  <span className="text-2xl font-light text-gray-400 group-hover:text-white transition-colors">
-                    {option.text}
+                  <span className="text-xl md:text-2xl font-light text-gray-400 group-hover:text-white transition-colors">
+                    <span className="text-dna-neon/40 mr-4 font-esports text-sm">0{idx + 1}</span>
+                    {lang === 'it' ? option.text_it : option.text}
                   </span>
                   <ChevronRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all text-dna-neon" />
                 </motion.button>
@@ -146,12 +150,12 @@ export default function QuizSystem() {
                 <Dna className="w-12 h-12 text-dna-neon animate-pulse" />
               </div>
             </div>
-            <h2 className="text-cyber text-4xl italic text-dna-neon animate-pulse">DECODING_PSYCHE</h2>
+            <h2 className="text-cyber text-4xl italic text-dna-neon animate-pulse">{t.quiz.decoding}</h2>
             <div className="mt-12 space-y-3 font-esports text-[10px] text-gray-600 uppercase tracking-widest">
-              <p>Aggregating behavioral datasets...</p>
-              <p>Normalizing toxicity coefficients...</p>
-              <p className="text-dna-danger">Anomaly detected in Ego Index: Proceeding anyway.</p>
-              <p>Finalizing DNA Sequence...</p>
+              <p>{t.quiz.agg}</p>
+              <p>{t.quiz.norm}</p>
+              <p className="text-dna-danger">{t.quiz.anomaly}</p>
+              <p>{t.quiz.finalizing}</p>
             </div>
           </motion.div>
         )}
@@ -171,22 +175,23 @@ export default function QuizSystem() {
                   if (shareToken) {
                     const url = `${window.location.origin}/results/${shareToken}`;
                     navigator.clipboard.writeText(url);
-                    alert("LINK COPIED: SHARE YOUR TRUTH.");
+                    alert(t.quiz.copied);
                   }
                 }}
                 className="flex-1 py-6 bg-dna-neon text-black font-esports text-sm tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)]"
                >
-                 Share Profile
+                 {t.quiz.share}
                </button>
                <button 
                  onClick={() => window.location.reload()}
                  className="flex-1 py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase"
                >
-                 Retry Scan
+                 {t.quiz.retry}
                </button>
              </div>
           </motion.div>
         )}
+
       </AnimatePresence>
     </div>
   );

@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { motion } from "framer-motion";
-import { Dna, LogIn, LogOut } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Dna, LogIn, LogOut, Globe } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
+  const { lang, setLang, t } = useLanguage();
+  const [showLangMenu, setShowLangMenu] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -38,8 +41,42 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-8">
+          {/* Language Switcher */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="flex items-center gap-2 font-esports text-[10px] tracking-widest text-gray-400 hover:text-white transition-colors"
+            >
+              <Globe className="w-3 h-3" />
+              {lang.toUpperCase()}
+            </button>
+            <AnimatePresence>
+              {showLangMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full mt-2 right-0 bg-black border border-white/10 p-2 min-w-[80px] z-[110]"
+                >
+                  <button 
+                    onClick={() => { setLang('en'); setShowLangMenu(false); }}
+                    className={`w-full text-left px-3 py-2 text-[10px] font-esports hover:bg-white/5 ${lang === 'en' ? 'text-dna-neon' : 'text-gray-400'}`}
+                  >
+                    ENGLISH
+                  </button>
+                  <button 
+                    onClick={() => { setLang('it'); setShowLangMenu(false); }}
+                    className={`w-full text-left px-3 py-2 text-[10px] font-esports hover:bg-white/5 ${lang === 'it' ? 'text-dna-neon' : 'text-gray-400'}`}
+                  >
+                    ITALIANO
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <Link href="/quiz" className="hidden md:block font-esports text-[10px] tracking-[0.4em] uppercase text-gray-400 hover:text-dna-neon transition-colors">
-            Init_Scan
+            {t.nav.scan}
           </Link>
           
           {user ? (
@@ -51,7 +88,7 @@ export default function Navbar() {
               onClick={handleLogin}
               className="px-6 py-2 border border-white/20 font-esports text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-all"
             >
-              Auth_Login
+              {t.nav.login}
             </button>
           )}
         </div>

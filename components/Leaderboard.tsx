@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface LeaderboardEntry {
   username: string;
@@ -9,6 +10,7 @@ interface LeaderboardEntry {
 }
 
 export default function Leaderboard() {
+  const { t } = useLanguage();
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function Leaderboard() {
   return (
     <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md border-l-4 border-l-purple-500">
       <h3 className="text-xl font-esports italic mb-6 text-white tracking-wider">
-        TOP AURA RANKING
+        {t.worldData.leaderboard}
       </h3>
       <div className="space-y-4">
         {leaders.length > 0 ? (
@@ -41,7 +43,7 @@ export default function Leaderboard() {
             </div>
           ))
         ) : (
-          <div className="text-gray-500 font-esports text-xs italic">WAITING FOR DATA...</div>
+          <div className="text-gray-500 font-esports text-xs italic">{t.worldData.loading}</div>
         )}
       </div>
     </div>

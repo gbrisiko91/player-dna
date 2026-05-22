@@ -1,27 +1,55 @@
 "use client";
 import { motion } from "framer-motion";
 import { Archetype } from "@/lib/data";
-import { Download, Loader2, Send } from "lucide-react";
+import { Download, Loader2, Send, BrainCircuit, Crown } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/context/LanguageContext";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface ResultCardProps {
   archetype: Archetype;
 }
 
 export default function ResultCard({ archetype }: ResultCardProps) {
+  const { lang, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
   }, []);
+
+  const handleCheckout = async () => {
+    setIsCheckoutLoading(true);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          archetype: archetype.name,
+          lang: lang 
+        }),
+      });
+      const { id } = await response.json();
+      const stripe = await stripePromise;
+      await stripe?.redirectToCheckout({ sessionId: id });
+    } catch (err) {
+      console.error("Stripe error:", err);
+      alert("Checkout error. Please try again.");
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
 
   const handleSyncDiscord = async () => {
     if (!user) {
@@ -106,7 +134,7 @@ export default function ResultCard({ archetype }: ResultCardProps) {
 
         {/* Top Header */}
         <div className="relative z-20 px-6 py-4 border-b border-white/10 flex justify-between items-center bg-black/50 backdrop-blur-sm">
-          <span className="font-esports text-[9px] tracking-[0.4em] text-white/70">NEURAL_SCAN_SUCCESS</span>
+          <span className="font-esports text-[9px] tracking-[0.4em] text-white/70">{t.result.neuralSuccess}</span>
           <div className="flex gap-1">
             <div className="w-1 h-3 bg-dna-neon" />
             <div className="w-1 h-3 bg-dna-neon/40" />
@@ -114,20 +142,31 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         </div>
 
         {/* Main Content Area */}
-        <div className="relative z-10 flex-1 px-8 py-6 flex flex-col justify-between">
+        <div className="relative z-10 flex-1 px-8 py-6 flex flex-col justify-between overflow-y-auto custom-scrollbar">
           
           <div>
-            <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">Subject Profile:</span>
+            <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">{t.result.subject}</span>
             <h2 
               className="text-3xl md:text-4xl font-esports italic font-black uppercase tracking-tighter leading-[0.9]"
               style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
             >
-              {archetype.name}
+              {lang === 'it' ? archetype.name_it : archetype.name}
             </h2>
           </div>
 
-          {/* Image Container - Fixed height to prevent overflow */}
-          <div className="relative h-56 w-full my-4 flex items-center justify-center">
+          {/* Motivation / Description Section */}
+          <div className="my-4 p-4 bg-white/5 border border-white/10 rounded-lg">
+             <div className="flex items-center gap-2 mb-2 text-dna-neon">
+                <BrainCircuit className="w-3 h-3" />
+                <span className="font-esports text-[8px] tracking-widest uppercase">{t.result.motivation}</span>
+             </div>
+             <p className="text-[10px] leading-relaxed text-gray-300 italic">
+                {lang === 'it' ? archetype.motivation_it : archetype.motivation}
+             </p>
+          </div>
+
+          {/* Image Container */}
+          <div className="relative h-44 w-full my-2 flex items-center justify-center">
             <div className="absolute inset-0 bg-dna-neon/5 rounded-2xl blur-xl" />
             <div className="relative w-full h-full rounded-xl border border-white/10 overflow-hidden bg-zinc-900/50">
                 <img 
@@ -164,9 +203,9 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           </div>
 
           {/* Footer Branding */}
-          <div className="pt-6 border-t border-white/10 flex justify-between items-center mt-4">
+          <div className="pt-4 border-t border-white/10 flex justify-between items-center mt-2">
             <div>
-              <span className="block font-esports text-[7px] text-gray-600 uppercase">Frequency</span>
+              <span className="block font-esports text-[7px] text-gray-600 uppercase">{t.result.frequency}</span>
               <span className="font-esports text-xl text-white italic leading-none">{archetype.rarity}%</span>
             </div>
             <div className="text-right">
@@ -180,6 +219,19 @@ export default function ResultCard({ archetype }: ResultCardProps) {
       {/* Action Buttons */}
       <div className="w-full max-w-[380px] flex flex-col gap-3">
         <button
+          onClick={handleCheckout}
+          disabled={isCheckoutLoading}
+          className="w-full py-5 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(168,85,247,0.4)]"
+        >
+          {isCheckoutLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Crown className="w-5 h-5" />
+          )}
+          {isCheckoutLoading ? t.result.processing : t.result.premium}
+        </button>
+
+        <button
           onClick={handleDownload}
           disabled={isDownloading}
           className="w-full py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
@@ -189,7 +241,7 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           ) : (
             <Download className="w-4 h-4" />
           )}
-          {isDownloading ? "Processing..." : "Download DNA Card"}
+          {isDownloading ? t.result.processing : t.result.download}
         </button>
 
         {user && (
@@ -205,11 +257,11 @@ export default function ResultCard({ archetype }: ResultCardProps) {
             {isSyncing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : syncStatus === 'success' ? (
-              <div className="flex items-center gap-2">✓ Role Synced</div>
+              <div className="flex items-center gap-2">{t.result.synced}</div>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Sync Discord Role
+                {t.result.sync}
               </>
             )}
           </button>

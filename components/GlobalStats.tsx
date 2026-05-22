@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Stats {
   archetype: string;
@@ -10,6 +11,7 @@ interface Stats {
 }
 
 export default function GlobalStats() {
+  const { t } = useLanguage();
   const [stats, setStats] = useState<Stats[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,13 +28,13 @@ export default function GlobalStats() {
     fetchStats();
   }, []);
 
-  if (loading) return <div className="text-cyan-500 font-esports text-xs animate-pulse">LOADING_GLOBAL_DATA...</div>;
+  if (loading) return <div className="text-cyan-500 font-esports text-xs animate-pulse">{t.worldData.loading}</div>;
 
   return (
     <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-md border-l-4 border-l-cyan-500">
       <h3 className="text-xl font-esports italic mb-6 text-white tracking-wider flex items-center gap-2">
         <span className="w-2 h-2 bg-cyan-500 rounded-full animate-ping" />
-        GLOBAL DISTRIBUTION
+        {t.worldData.distribution}
       </h3>
       
       <div className="space-y-5">
@@ -57,7 +59,7 @@ export default function GlobalStats() {
       
       <div className="mt-8 pt-4 border-t border-white/5">
         <p className="text-[9px] font-esports text-gray-500 uppercase text-center tracking-widest">
-          Network size: {stats.reduce((acc, curr) => acc + curr.total, 0)} scanned_devs
+          {t.worldData.networkSize.replace('{size}', stats.reduce((acc, curr) => acc + curr.total, 0).toString())}
         </p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+"use client";
 import Hero from "@/components/Hero";
 import ArchetypePreview from "@/components/ArchetypePreview";
 import Leaderboard from "@/components/Leaderboard";
@@ -5,8 +6,10 @@ import GlobalStats from "@/components/GlobalStats";
 import SocialProof from "@/components/SocialProof";
 import { Dna } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
+  const { t } = useLanguage();
   return (
     <div className="flex flex-col w-full bg-[#030303]">
       {/* SECTION 1: HERO (THE SCANNER) */}
@@ -18,9 +21,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-7xl font-esports italic font-black mb-4 tracking-tighter">
-              WORLD_<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">DATA</span>
+              {t.worldData.title}<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">DATA</span>
             </h2>
-            <p className="text-gray-500 font-esports text-xs tracking-[0.5em] uppercase">Real-time global network synchronization</p>
+            <p className="text-gray-500 font-esports text-xs tracking-[0.5em] uppercase">{t.worldData.subtitle}</p>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12">
@@ -45,11 +48,11 @@ export default function Home() {
         
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl md:text-6xl font-esports italic font-black mb-8 leading-tight">
-            READY TO UNLOCK YOUR <br/>
-            <span className="text-dna-neon">TRUE POTENTIAL?</span>
+            {t.cta.ready} <br/>
+            <span className="text-dna-neon">{t.cta.potential}</span>
           </h2>
           <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto italic">
-            Join thousands of players already optimized. Get your role, share your DNA, and dominate the leaderboard.
+            {t.cta.desc}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -59,13 +62,13 @@ export default function Home() {
               rel="noopener noreferrer"
               className="px-10 py-5 bg-[#5865F2] text-white font-esports text-sm tracking-[0.3em] uppercase hover:bg-[#4752C4] transition-all flex items-center gap-3"
             >
-              Step 1: Join Discord
+              {t.cta.discord}
             </a>
             <Link 
               href="/quiz"
               className="px-10 py-5 border border-white/20 text-white font-esports text-sm tracking-[0.3em] uppercase hover:bg-white/10 transition-all flex items-center gap-3"
             >
-              Step 2: Start Scan
+              {t.cta.scan}
             </Link>
           </div>
         </div>

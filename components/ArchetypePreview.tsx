@@ -1,8 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
 import { ARCHETYPES } from "@/lib/data";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ArchetypePreview() {
+  const { lang } = useLanguage();
   return (
     <section className="py-40 px-6 relative bg-[#050505] overflow-hidden">
       <div className="absolute inset-0 grid-mesh opacity-10" />
@@ -44,11 +46,11 @@ export default function ArchetypePreview() {
                 </div>
                 
                 <h4 className="text-4xl font-esports italic font-black uppercase mb-4 group-hover:text-glow transition-all" style={{ color: archetype.color }}>
-                  {archetype.name}
+                  {lang === 'it' ? archetype.name_it : archetype.name}
                 </h4>
                 
                 <p className="text-sm text-gray-400 font-light leading-relaxed group-hover:text-gray-200 transition-colors">
-                  {archetype.description}
+                  {lang === 'it' ? archetype.description_it : archetype.description}
                 </p>
               </div>
 
