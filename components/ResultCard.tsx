@@ -87,17 +87,23 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           {/* Central Visual - Holographic Archetype Illustration */}
           <div className="relative flex-1 flex items-center justify-center my-8">
              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
-             <div className="relative w-56 h-56 flex items-center justify-center">
+             <div className="relative w-72 h-72 flex items-center justify-center">
                 <motion.div 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                   className="absolute inset-0 border border-white/5 border-dashed rounded-full"
                 />
-                <img 
-                  src={archetype.image} 
-                  alt={archetype.name}
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] mix-blend-screen opacity-90 group-hover:scale-110 transition-transform duration-1000" 
-                />
+                <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-black/20 backdrop-blur-sm">
+                   <img 
+                      src={archetype.image} 
+                      alt={archetype.name}
+                      className="w-full h-full object-cover filter brightness-110 contrast-125 mix-blend-screen opacity-100 group-hover:scale-110 transition-transform duration-1000" 
+                   />
+                   {/* Overlay Effects */}
+                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                   <div className="absolute inset-0 scanline opacity-20" />
+                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40" />
+                </div>
              </div>
           </div>
 

@@ -19,17 +19,27 @@ export default function ArchetypePreview() {
               key={archetype.id}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="group relative h-[500px] border border-white/5 bg-black p-8 flex flex-col justify-end transition-all hover:border-dna-neon/50 overflow-hidden"
+              className="group relative h-[500px] border border-white/5 bg-black flex flex-col justify-end transition-all hover:border-dna-neon/50 overflow-hidden"
             >
+              {/* Background Image */}
+              <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700">
+                <img 
+                  src={archetype.image} 
+                  alt={archetype.name}
+                  className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              </div>
+
               {/* Background Glow */}
               <div 
                 className="absolute -top-20 -right-20 w-40 h-40 blur-[80px] opacity-0 group-hover:opacity-20 transition-opacity"
                 style={{ backgroundColor: archetype.color }}
               />
               
-              <div className="relative z-10">
+              <div className="relative z-10 p-8">
                 <div className="flex justify-between items-center mb-6">
-                  <span className="font-esports text-[9px] text-gray-600 tracking-widest uppercase">Freq: {archetype.rarity}%</span>
+                  <span className="font-esports text-[9px] text-gray-400 tracking-widest uppercase">Freq: {archetype.rarity}%</span>
                   <div className="w-1 h-4 bg-white/10 group-hover:bg-dna-neon transition-colors" />
                 </div>
                 
@@ -37,7 +47,7 @@ export default function ArchetypePreview() {
                   {archetype.name}
                 </h4>
                 
-                <p className="text-sm text-gray-500 font-light leading-relaxed group-hover:text-gray-300 transition-colors">
+                <p className="text-sm text-gray-400 font-light leading-relaxed group-hover:text-gray-200 transition-colors">
                   {archetype.description}
                 </p>
               </div>

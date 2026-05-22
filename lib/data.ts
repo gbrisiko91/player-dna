@@ -25,7 +25,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "The 1v5 isn't a problem. It's an opportunity.",
     rarity: 3,
     color: "#00f2ff",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=clutch&backgroundColor=00f2ff&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Afa45159bed894706bfbb60421d6f4f4a1.png",
     traits: { ego: 65, clutch: 98, toxic: 20, tactics: 70, resilience: 95 }
   },
   {
@@ -36,7 +36,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "If we're going down, I'm taking the whole server with me.",
     rarity: 15,
     color: "#ff4b2b",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=berserk&backgroundColor=ff4b2b&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Aa0ebae08e169469196f2b3aacb47c2d2x.png",
     traits: { ego: 80, clutch: 40, toxic: 85, tactics: 30, resilience: 10 }
   },
   {
@@ -47,7 +47,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "Actions speak. I don't.",
     rarity: 5,
     color: "#ffffff",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=ghost&backgroundColor=ffffff&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Ace445737ebad44eabaa3a2d589ccaf660.png",
     traits: { ego: 40, clutch: 85, toxic: 5, tactics: 80, resilience: 90 }
   },
   {
@@ -58,7 +58,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "Wait for me. I'm the win condition.",
     rarity: 8,
     color: "#f9d423",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=star&backgroundColor=f9d423&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Af5ec46ad8b934653ba5d67472fdfdc6eB.png",
     traits: { ego: 99, clutch: 60, toxic: 45, tactics: 50, resilience: 30 }
   },
   {
@@ -69,7 +69,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "It's just a game. But winning is a habit.",
     rarity: 2,
     color: "#f6d365",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=zen&backgroundColor=f6d365&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Af0fa14e87101472486e9a4b9f807963fU.png",
     traits: { ego: 20, clutch: 80, toxic: 0, tactics: 85, resilience: 99 }
   },
   {
@@ -80,7 +80,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "I'm not mad. I'm just disappointed in your fundamental lack of skill.",
     rarity: 12,
     color: "#82ffb0",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=chill&backgroundColor=82ffb0&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Af97bfe837c1f402d9296b65379b05de6C.png",
     traits: { ego: 50, clutch: 30, toxic: 70, tactics: 40, resilience: 60 }
   },
   {
@@ -91,7 +91,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "Calculated. Every move was foreseen.",
     rarity: 10,
     color: "#a18cd1",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=monk&backgroundColor=a18cd1&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/A3888bfde4bc14ee4a6f10f946b2035133.png",
     traits: { ego: 30, clutch: 50, toxic: 5, tactics: 99, resilience: 75 }
   },
   {
@@ -102,7 +102,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "If I don't know what I'm doing, they certainly don't.",
     rarity: 7,
     color: "#ff00ff",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=chaos&backgroundColor=ff00ff&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/A251bc028f18842c1a7c933a07c3281f1z.png",
     traits: { ego: 70, clutch: 80, toxic: 40, tactics: 10, resilience: 50 }
   },
   {
@@ -113,7 +113,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "I gave my life for this team. Don't waste it.",
     rarity: 20,
     color: "#4facfe",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=shield&backgroundColor=4facfe&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/A562e54d9420e4ba099761bc792858f25H.png",
     traits: { ego: 60, clutch: 40, toxic: 30, tactics: 50, resilience: 90 }
   },
   {
@@ -124,7 +124,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "Don't buy. We win with what we have.",
     rarity: 9,
     color: "#00b09b",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=gold&backgroundColor=00b09b&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Aaba906fdff5043b291626f371d2b8712i.png",
     traits: { ego: 40, clutch: 30, toxic: 20, tactics: 95, resilience: 80 }
   },
   {
@@ -135,7 +135,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "Go back to tutorial. This is my house.",
     rarity: 6,
     color: "#667eea",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=old&backgroundColor=667eea&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Aae18fe0c29fd45c2bf64bb57fd9436d2z.png",
     traits: { ego: 85, clutch: 50, toxic: 95, tactics: 70, resilience: 60 }
   },
   {
@@ -146,7 +146,7 @@ export const ARCHETYPES: Archetype[] = [
     quote: "I don't play the game. I play the character.",
     rarity: 3,
     color: "#cfd9df",
-    image: "https://api.dicebear.com/7.x/shapes/svg?seed=special&backgroundColor=cfd9df&shape1Color=000000",
+    image: "https://sc02.alicdn.com/kf/Af6c086307c8f455080099fae28892bcaK.png",
     traits: { ego: 90, clutch: 70, toxic: 10, tactics: 20, resilience: 40 }
   }
 ];
