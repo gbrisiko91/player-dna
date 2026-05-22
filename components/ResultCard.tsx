@@ -84,18 +84,23 @@ export default function ResultCard({ archetype }: ResultCardProps) {
             {archetype.name}
           </h2>
 
-          {/* Central Visual - Holographic */}
+          {/* Central Visual - Holographic Archetype Illustration */}
           <div className="relative flex-1 flex items-center justify-center my-8">
              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
-             <div className="relative w-48 h-48 border-2 border-dashed border-white/10 rounded-full flex items-center justify-center">
+             <div className="relative w-56 h-56 flex items-center justify-center">
                 <motion.div 
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-2 border border-dna-neon/20 rounded-full"
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 border border-white/5 border-dashed rounded-full"
                 />
-                <Fingerprint className="w-24 h-24" style={{ color: archetype.color }} />
+                <img 
+                  src={archetype.image} 
+                  alt={archetype.name}
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] mix-blend-screen opacity-90 group-hover:scale-110 transition-transform duration-1000" 
+                />
              </div>
           </div>
+
 
           {/* Stats */}
           <div className="space-y-6 mb-12">
