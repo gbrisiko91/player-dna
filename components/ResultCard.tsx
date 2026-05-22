@@ -55,6 +55,28 @@ export default function ResultCard({ archetype }: ResultCardProps) {
     }
   };
 
+  const handleDownload = async () => {
+    if (cardRef.current === null) return;
+    
+    setIsDownloading(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, { 
+        cacheBust: true,
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#000000',
+      });
+      
+      const link = document.createElement('a');
+      link.download = `playerdna-${archetype.slug}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Errore durante il download:', err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const traits = [
     { label: "EGO INDEX", value: archetype.traits.ego, color: "text-white" },
