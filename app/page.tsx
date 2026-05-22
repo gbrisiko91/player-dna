@@ -40,27 +40,48 @@ export default function Home() {
       <ArchetypePreview />
 
       {/* SECTION 5: FINAL CTA (THE CONVERSION) */}
-      <footer className="w-full py-60 flex flex-col items-center justify-center bg-[#050505] relative overflow-hidden border-t border-white/5">
-        <div className="absolute inset-0 grid-mesh opacity-5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-dna-purple opacity-10 blur-[150px] rounded-full" />
+      <section className="py-40 px-4 bg-black relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-dna-neon to-transparent" />
         
-        <Dna className="w-20 h-20 text-dna-neon mb-12 animate-spin-slow" />
-        
-        <h2 className="text-cyber text-5xl md:text-[100px] text-center mb-16 leading-none">
-          RECODE YOUR<br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-dna-neon to-dna-purple">FUTURE_SELF</span>
-        </h2>
-
-        <Link href="/quiz">
-          <button className="px-20 py-8 bg-dna-neon text-black font-esports text-xl tracking-[0.4em] uppercase hover:bg-white transition-all shadow-[0_0_50px_rgba(0,242,255,0.3)]">
-            Initialize Scan
-          </button>
-        </Link>
-
-        <div className="mt-40 text-center font-esports text-[8px] text-gray-700 tracking-[0.8em] uppercase border-t border-white/5 pt-8 w-full">
-          PlayerDNA Protocol © 2026 // Neural Mapping Active
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-esports italic font-black mb-8 leading-tight">
+            READY TO UNLOCK YOUR <br/>
+            <span className="text-dna-neon">TRUE POTENTIAL?</span>
+          </h2>
+          <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto italic">
+            Join thousands of players already optimized. Get your role, share your DNA, and dominate the leaderboard.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <a 
+              href="https://discord.gg/CcTgHeDpMc" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-10 py-5 bg-[#5865F2] text-white font-esports text-sm tracking-[0.3em] uppercase hover:bg-[#4752C4] transition-all flex items-center gap-3"
+            >
+              Step 1: Join Discord
+            </a>
+            <Link 
+              href="/quiz"
+              className="px-10 py-5 border border-white/20 text-white font-esports text-sm tracking-[0.3em] uppercase hover:bg-white/10 transition-all flex items-center gap-3"
+            >
+              Step 2: Start Scan
+            </Link>
+          </div>
         </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="py-12 border-t border-white/5 bg-black text-center">
+        <div className="flex justify-center items-center gap-2 mb-4">
+          <Dna className="w-5 h-5 text-dna-neon" />
+          <span className="font-esports text-xs tracking-widest">PLAYERDNA.GG</span>
+        </div>
+        <p className="text-[9px] text-gray-600 font-esports uppercase tracking-widest">
+          © 2026 NEURAL_SYSTEMS_GLOBAL. ALL RIGHTS RESERVED.
+        </p>
       </footer>
     </div>
   );
 }
+

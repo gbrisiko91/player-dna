@@ -79,11 +79,11 @@ export default function ResultCard({ archetype }: ResultCardProps) {
   };
 
   const traits = [
-    { label: "EGO INDEX", value: archetype.traits.ego, color: "text-white" },
-    { label: "CLUTCH FACTOR", value: archetype.traits.clutch, color: "text-dna-neon" },
-    { label: "TOXICITY LEVEL", value: archetype.traits.toxic, color: "text-dna-danger" },
-    { label: "TACTICAL BRAIN", value: archetype.traits.tactics, color: "text-dna-purple" },
-    { label: "MENTAL SHIELD", value: archetype.traits.resilience, color: "text-dna-toxic" },
+    { label: "EGO", value: archetype.traits.ego, color: "text-white" },
+    { label: "CLUTCH", value: archetype.traits.clutch, color: "text-dna-neon" },
+    { label: "TOXICITY", value: archetype.traits.toxic, color: "text-dna-danger" },
+    { label: "TACTICS", value: archetype.traits.tactics, color: "text-dna-purple" },
+    { label: "RESILIENCE", value: archetype.traits.resilience, color: "text-dna-toxic" },
   ];
 
   return (
@@ -116,11 +116,10 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         {/* Main Content Area */}
         <div className="relative z-10 flex-1 px-8 py-6 flex flex-col justify-between">
           
-          {/* Title Section */}
           <div>
             <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">Subject Profile:</span>
             <h2 
-              className="text-4xl md:text-5xl font-esports italic font-black uppercase tracking-tighter leading-none"
+              className="text-3xl md:text-4xl font-esports italic font-black uppercase tracking-tighter leading-[0.9]"
               style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
             >
               {archetype.name}
