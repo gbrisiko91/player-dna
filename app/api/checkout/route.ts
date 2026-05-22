@@ -7,10 +7,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
-    const { archetype, lang } = await req.json();
+    const { archetype, archetype_id, lang, nickname } = await req.json();
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      metadata: {
+        archetype_id,
+        lang,
+        nickname
+      },
       line_items: [
         {
           price_data: {

@@ -11,6 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function QuizSystem() {
   const { lang, t } = useLanguage();
   const [step, setStep] = useState(0); // 0: Start, 1: Quiz, 2: Loading, 3: Result
+  const [nickname, setNickname] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [scores, setScores] = useState<{ [key: string]: number }>({
     ego: 50, clutch: 50, toxic: 50, tactics: 50, resilience: 50
@@ -72,20 +73,32 @@ export default function QuizSystem() {
             key="start"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
             className="text-center z-10"
           >
              <ShieldAlert className="w-20 h-20 text-dna-neon mx-auto mb-8 animate-pulse" />
             <h2 className="text-cyber text-5xl md:text-8xl mb-4 italic">IDENTITY_SCAN</h2>
             <p className="font-esports text-[10px] text-gray-500 tracking-[0.6em] mb-12 uppercase">Authorization Required: Access Granted</p>
+            
+            <div className="max-w-sm mx-auto mb-8">
+              <input 
+                type="text" 
+                placeholder="ENTER_SUBJECT_NICKNAME..."
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                className="w-full bg-black/40 border border-white/20 p-4 font-esports text-sm text-dna-neon placeholder:text-gray-700 focus:border-dna-neon outline-none transition-all text-center"
+              />
+            </div>
+
             <button
               onClick={startQuiz}
-              className="px-16 py-6 bg-dna-neon text-black font-esports text-xl tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_30px_rgba(0,242,255,0.4)]"
+              disabled={!nickname.trim()}
+              className="px-16 py-6 bg-dna-neon text-black font-esports text-xl tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_30px_rgba(0,242,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t.hero.start}
             </button>
           </motion.div>
         )}
+
 
         {step === 1 && (
           <motion.div
@@ -167,7 +180,7 @@ export default function QuizSystem() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center gap-16 py-20 w-full"
           >
-             <ResultCard archetype={result} />
+             <ResultCard archetype={result} nickname={nickname} />
              
              <div className="flex flex-col md:flex-row gap-6 w-full max-w-[400px]">
                <button 

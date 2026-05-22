@@ -9,9 +9,10 @@ import { useLanguage } from "@/context/LanguageContext";
 
 interface ResultCardProps {
   archetype: Archetype;
+  nickname: string;
 }
 
-export default function ResultCard({ archetype }: ResultCardProps) {
+export default function ResultCard({ archetype, nickname }: ResultCardProps) {
 
   const { lang, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,9 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           archetype: archetype.name,
-          lang: lang 
+          archetype_id: archetype.id,
+          lang: lang,
+          nickname: nickname
         }),
       });
       const { url } = await response.json();
@@ -144,7 +147,9 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         <div className="relative z-10 flex-1 px-8 py-6 flex flex-col justify-between overflow-y-auto custom-scrollbar">
           
           <div>
-            <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">{t.result.subject}</span>
+            <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">
+              {t.result.subject} <span className="text-white">{nickname}</span>
+            </span>
             <h2 
               className="text-3xl md:text-4xl font-esports italic font-black uppercase tracking-tighter leading-[0.9]"
               style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
