@@ -1,9 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
 import { Archetype } from "@/lib/data";
-import { Download, Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { Download, Loader2, Send } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import { toPng } from "html-to-image";
+import { supabase } from "@/lib/supabase";
 
 interface ResultCardProps {
   archetype: Archetype;
@@ -12,29 +13,48 @@ interface ResultCardProps {
 export default function ResultCard({ archetype }: ResultCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleDownload = async () => {
-    if (cardRef.current === null) return;
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
+
+  const handleSyncDiscord = async () => {
+    if (!user) {
+      alert("Please login with Discord first!");
+      return;
+    }
     
-    setIsDownloading(true);
+    setIsSyncing(true);
+    setSyncStatus('idle');
+
     try {
-      const dataUrl = await toPng(cardRef.current, { 
-        cacheBust: true,
-        quality: 1,
-        pixelRatio: 2,
-        backgroundColor: '#000000',
+      const response = await fetch('/api/discord/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          archetype: archetype.name,
+          discordId: user.user_metadata.provider_id
+        }),
       });
-      
-      const link = document.createElement('a');
-      link.download = `playerdna-${archetype.slug}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      if (response.ok) {
+        setSyncStatus('success');
+      } else {
+        setSyncStatus('error');
+      }
     } catch (err) {
-      console.error('Errore durante il download:', err);
+      setSyncStatus('error');
     } finally {
-      setIsDownloading(false);
+      setIsSyncing(false);
     }
   };
+
 
   const traits = [
     { label: "EGO INDEX", value: archetype.traits.ego, color: "text-white" },
@@ -136,19 +156,44 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         </div>
       </motion.div>
 
-      {/* Action Button */}
-      <button
-        onClick={handleDownload}
-        disabled={isDownloading}
-        className="w-full max-w-[380px] py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-      >
-        {isDownloading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          <Download className="w-4 h-4" />
+      {/* Action Buttons */}
+      <div className="w-full max-w-[380px] flex flex-col gap-3">
+        <button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className="w-full py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+        >
+          {isDownloading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
+          {isDownloading ? "Processing..." : "Download DNA Card"}
+        </button>
+
+        {user && (
+          <button
+            onClick={handleSyncDiscord}
+            disabled={isSyncing || syncStatus === 'success'}
+            className={`w-full py-4 border font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 flex items-center justify-center gap-3 ${
+              syncStatus === 'success' 
+                ? 'border-dna-toxic text-dna-toxic' 
+                : 'border-white/20 hover:bg-white/10 text-white'
+            }`}
+          >
+            {isSyncing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : syncStatus === 'success' ? (
+              <div className="flex items-center gap-2">✓ Role Synced</div>
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                Sync Discord Role
+              </>
+            )}
+          </button>
         )}
-        {isDownloading ? "Processing..." : "Download DNA Card"}
-      </button>
+      </div>
     </div>
   );
 }

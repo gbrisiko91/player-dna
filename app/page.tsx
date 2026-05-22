@@ -12,21 +12,12 @@ export default function Home() {
       {/* SECTION 1: HERO (THE SCANNER) */}
       <Hero />
 
-      {/* SECTION 2: TESTIMONIALS (REALITY CHECK) */}
-      <div className="w-full py-40 border-y border-white/5 bg-black relative">
-         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-dna-neon/50 to-transparent" />
-         <SocialProof />
-      </div>
-
-      {/* SECTION 3: ARCHETYPES (THE DATABASE) */}
-      <ArchetypePreview />
-
-      {/* SECTION 4: WORLD_DATA (GLOBAL STATS & LEADERBOARD) */}
-      <section id="stats" className="py-32 px-4 bg-black/50 border-y border-white/5 relative">
+      {/* SECTION 2: WORLD_DATA (GLOBAL STATS & LEADERBOARD) - MOVED HERE */}
+      <section id="stats" className="py-24 px-4 bg-black/50 border-y border-white/5 relative">
         <div className="absolute inset-0 grid-mesh opacity-5" />
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-8xl font-esports italic font-black mb-4 tracking-tighter">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-7xl font-esports italic font-black mb-4 tracking-tighter">
               WORLD_<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">DATA</span>
             </h2>
             <p className="text-gray-500 font-esports text-xs tracking-[0.5em] uppercase">Real-time global network synchronization</p>
@@ -38,6 +29,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* SECTION 3: TESTIMONIALS (REALITY CHECK) */}
+      <div className="w-full py-40 border-b border-white/5 bg-black relative">
+         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-dna-neon/50 to-transparent" />
+         <SocialProof />
+      </div>
+
+      {/* SECTION 4: ARCHETYPES (THE DATABASE) */}
+      <ArchetypePreview />
 
       {/* SECTION 5: FINAL CTA (THE CONVERSION) */}
       <footer className="w-full py-60 flex flex-col items-center justify-center bg-[#050505] relative overflow-hidden border-t border-white/5">
