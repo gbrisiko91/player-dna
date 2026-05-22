@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import ArchetypePreview from "@/components/ArchetypePreview";
 import Leaderboard from "@/components/Leaderboard";
+import GlobalStats from "@/components/GlobalStats";
 import SocialProof from "@/components/SocialProof";
 import { Dna } from "lucide-react";
 import Link from "next/link";
@@ -20,8 +21,23 @@ export default function Home() {
       {/* SECTION 3: ARCHETYPES (THE DATABASE) */}
       <ArchetypePreview />
 
-      {/* SECTION 4: LEADERBOARD (GLOBAL STATS) */}
-      <Leaderboard />
+      {/* SECTION 4: WORLD_DATA (GLOBAL STATS & LEADERBOARD) */}
+      <section id="stats" className="py-32 px-4 bg-black/50 border-y border-white/5 relative">
+        <div className="absolute inset-0 grid-mesh opacity-5" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-8xl font-esports italic font-black mb-4 tracking-tighter">
+              WORLD_<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-purple-500">DATA</span>
+            </h2>
+            <p className="text-gray-500 font-esports text-xs tracking-[0.5em] uppercase">Real-time global network synchronization</p>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12">
+            <GlobalStats />
+            <Leaderboard />
+          </div>
+        </div>
+      </section>
 
       {/* SECTION 5: FINAL CTA (THE CONVERSION) */}
       <footer className="w-full py-60 flex flex-col items-center justify-center bg-[#050505] relative overflow-hidden border-t border-white/5">

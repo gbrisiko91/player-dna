@@ -21,7 +21,8 @@ export default function ResultCard({ archetype }: ResultCardProps) {
       const dataUrl = await toPng(cardRef.current, { 
         cacheBust: true,
         quality: 1,
-        pixelRatio: 2
+        pixelRatio: 2,
+        backgroundColor: '#000000',
       });
       
       const link = document.createElement('a');
@@ -47,116 +48,107 @@ export default function ResultCard({ archetype }: ResultCardProps) {
     <div className="flex flex-col items-center gap-8">
       <motion.div
         ref={cardRef}
-        initial={{ opacity: 0, scale: 0.8, rotateY: 30 }}
-        animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-        className="relative w-full max-w-[400px] aspect-[9/16] bg-black border-[3px] border-white/10 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative w-full max-w-[380px] aspect-[9/16] bg-black border-[1px] border-white/20 overflow-hidden shadow-2xl flex flex-col"
       >
         {/* Background FX */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 grid-mesh opacity-20" />
-          <div className="scanline" />
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 grid-mesh opacity-10" />
+          <div className="scanline opacity-30" />
           <div 
-            className="absolute -top-20 -right-20 w-80 h-80 blur-[120px] opacity-40"
+            className="absolute -top-40 -right-40 w-96 h-96 blur-[120px] opacity-30"
             style={{ backgroundColor: archetype.color }}
           />
         </div>
 
-        {/* Top Bar */}
-        <div className="absolute top-0 left-0 right-0 h-16 border-b border-white/10 flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-20">
-          <span className="font-esports text-[10px] tracking-[0.4em] text-white">NEURAL_SCAN_SUCCESS</span>
+        {/* Top Header */}
+        <div className="relative z-20 px-6 py-4 border-b border-white/10 flex justify-between items-center bg-black/50 backdrop-blur-sm">
+          <span className="font-esports text-[9px] tracking-[0.4em] text-white/70">NEURAL_SCAN_SUCCESS</span>
           <div className="flex gap-1">
             <div className="w-1 h-3 bg-dna-neon" />
-            <div className="w-1 h-3 bg-dna-neon/50" />
-            <div className="w-1 h-3 bg-dna-neon/20" />
+            <div className="w-1 h-3 bg-dna-neon/40" />
           </div>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 p-6 pt-20 h-full flex flex-col">
-          <div className="mb-1">
-            <span className="font-esports text-[9px] text-gray-500 tracking-widest uppercase">Identified Archetype:</span>
+        {/* Main Content Area */}
+        <div className="relative z-10 flex-1 px-8 py-6 flex flex-col justify-between">
+          
+          {/* Title Section */}
+          <div>
+            <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase block mb-1">Subject Profile:</span>
+            <h2 
+              className="text-4xl md:text-5xl font-esports italic font-black uppercase tracking-tighter leading-none"
+              style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
+            >
+              {archetype.name}
+            </h2>
           </div>
-          <h2 
-            className="text-5xl font-esports italic font-black uppercase tracking-tighter leading-tight mb-4"
-            style={{ color: archetype.color, textShadow: `0 0 30px ${archetype.color}66` }}
-          >
-            {archetype.name}
-          </h2>
 
-          {/* Central Visual */}
-          <div className="relative flex-1 flex items-center justify-center my-2 min-h-0">
-             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
-             <div className="relative w-full aspect-square max-w-[220px] flex items-center justify-center">
-                <motion.div 
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 border border-white/5 border-dashed rounded-full"
+          {/* Image Container - Fixed height to prevent overflow */}
+          <div className="relative h-56 w-full my-4 flex items-center justify-center">
+            <div className="absolute inset-0 bg-dna-neon/5 rounded-2xl blur-xl" />
+            <div className="relative w-full h-full rounded-xl border border-white/10 overflow-hidden bg-zinc-900/50">
+                <img 
+                  src={archetype.image} 
+                  alt={archetype.name}
+                  className="w-full h-full object-cover mix-blend-lighten" 
                 />
-                <div className="absolute inset-2 overflow-hidden rounded-2xl border border-white/10 bg-black/20 backdrop-blur-sm">
-                   <img 
-                      src={archetype.image} 
-                      alt={archetype.name}
-                      className="w-full h-full object-cover filter brightness-110 contrast-125 mix-blend-screen" 
-                   />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                <div className="absolute top-2 right-2 px-2 py-0.5 border border-white/20 rounded text-[7px] font-esports text-white/50">
+                  REF_{archetype.id}
                 </div>
-             </div>
+            </div>
           </div>
 
-          {/* Stats Container */}
-          <div className="space-y-4 mb-6">
+          {/* Stats Section */}
+          <div className="space-y-3">
             {traits.map((trait) => (
-              <div key={trait.label}>
+              <div key={trait.label} className="group">
                 <div className="flex justify-between items-end mb-1">
-                  <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase">{trait.label}</span>
-                  <span className={`font-esports text-xs font-bold ${trait.color}`}>{trait.value}%</span>
+                  <span className="font-esports text-[8px] text-gray-500 tracking-widest group-hover:text-white transition-colors">{trait.label}</span>
+                  <span className={`font-esports text-[10px] font-bold ${trait.color}`}>{trait.value}%</span>
                 </div>
-                <div className="h-[2px] bg-white/5 w-full relative">
+                <div className="h-1 bg-white/5 w-full rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${trait.value}%` }}
-                    transition={{ duration: 2, delay: 0.5 }}
-                    className="absolute inset-y-0 left-0"
-                    style={{ backgroundColor: archetype.color, boxShadow: `0 0 10px ${archetype.color}` }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: archetype.color }}
                   />
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Footer */}
-          <div className="mt-auto pt-4 border-t border-white/5 flex justify-between items-end">
+          {/* Footer Branding */}
+          <div className="pt-6 border-t border-white/10 flex justify-between items-center mt-4">
             <div>
-              <span className="block font-esports text-[8px] text-gray-600 uppercase mb-1">Global Frequency</span>
-              <span className="font-esports text-2xl text-white italic">{archetype.rarity}%</span>
+              <span className="block font-esports text-[7px] text-gray-600 uppercase">Frequency</span>
+              <span className="font-esports text-xl text-white italic leading-none">{archetype.rarity}%</span>
             </div>
             <div className="text-right">
-               <span className="block font-esports text-[10px] text-dna-neon font-black italic tracking-widest">PLAYERDNA.GG</span>
+              <span className="block font-esports text-[9px] text-dna-neon font-black italic tracking-widest">PLAYERDNA.GG</span>
             </div>
           </div>
+
         </div>
       </motion.div>
 
-      {/* Download Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      {/* Action Button */}
+      <button
         onClick={handleDownload}
         disabled={isDownloading}
-        className="w-full max-w-[400px] py-5 bg-white text-black font-esports text-sm tracking-[0.3em] uppercase flex items-center justify-center gap-3 hover:bg-dna-neon transition-all"
+        className="w-full max-w-[380px] py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
       >
         {isDownloading ? (
-          <>
-            <Loader2 className="w-5 h-5 animate-spin" />
-            Generating Image...
-          </>
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
-          <>
-            <Download className="w-5 h-5" />
-            Download Social Card
-          </>
+          <Download className="w-4 h-4" />
         )}
-      </motion.button>
+        {isDownloading ? "Processing..." : "Download DNA Card"}
+      </button>
     </div>
   );
 }
