@@ -4,77 +4,107 @@
 
 @layer base {
   :root {
-    --dna-purple: 139, 92, 246;
     --dna-neon: 0, 242, 255;
+    --dna-purple: 139, 92, 246;
     --dna-toxic: 173, 255, 47;
-    --dna-black: 5, 5, 5;
+    --dna-danger: 255, 43, 43;
   }
-
   body {
-    @apply bg-black text-white antialiased selection:bg-dna-purple/30;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    @apply bg-[#030303] text-white selection:bg-dna-neon/30 overflow-x-hidden;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-/* Texture Noise - Fondamentale per il look premium */
-.bg-noise {
+/* --- THE VOID & NOISE --- */
+.the-void {
+  background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
   background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-  filter: contrast(170%) brightness(1000%);
-}
-
-/* Gradienti Volumetrici */
-.glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
+  opacity: 0.04;
   pointer-events: none;
-  z-index: 0;
+  z-index: 999;
+  filter: contrast(150%) brightness(100%);
 }
 
-/* Cyber Grids */
-.grid-mesh {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black, transparent 90%);
+/* --- SCANNING EFFECTS --- */
+.scanline {
+  width: 100%;
+  height: 2px;
+  background: rgba(0, 242, 255, 0.2);
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+  animation: scan 4s linear infinite;
 }
 
-/* Tipografia Brutalista */
-.text-mega {
-  font-size: clamp(3rem, 15vw, 12rem);
-  line-height: 0.8;
-  letter-spacing: -0.05em;
-  font-style: italic;
-  font-weight: 900;
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* --- HOLOGRAPHIC PANELS --- */
+.hologram-panel {
+  background: linear-gradient(180deg, rgba(0, 242, 255, 0.05) 0%, rgba(0, 0, 0, 0.8) 100%);
+  border-left: 2px solid rgba(0, 242, 255, 0.3);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.hologram-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.5), transparent);
+}
+
+/* --- TYPOGRAPHY --- */
+.font-esports { font-family: 'Orbitron', sans-serif; }
+
+.text-cyber {
   text-transform: uppercase;
+  letter-spacing: -0.05em;
+  font-weight: 900;
+  font-style: italic;
+  font-family: 'Orbitron', sans-serif;
 }
 
-.text-outline {
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
-  color: transparent;
+.glitch-text {
+  position: relative;
+  display: inline-block;
 }
 
-/* Glassmorphism V2 */
-.glass-heavy {
-  background: rgba(255, 255, 255, 0.01);
-  backdrop-filter: blur(40px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 2px;
+  text-shadow: -1px 0 #ff00c1;
+  clip: rect(44px, 450px, 56px, 0);
+  background: black;
+  animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 
-/* Animazioni di Scorrimento */
-.reveal-text {
-  background: linear-gradient(to right, white 50%, rgba(255, 255, 255, 0.1) 50%);
-  background-size: 200% 100%;
-  background-position-x: 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  transition: background-position 1s ease-out;
+@keyframes glitch-anim {
+  0% { clip: rect(31px, 9999px, 94px, 0); }
+  20% { clip: rect(62px, 9999px, 42px, 0); }
+  40% { clip: rect(16px, 9999px, 78px, 0); }
+  60% { clip: rect(81px, 9999px, 13px, 0); }
+  80% { clip: rect(43px, 9999px, 54px, 0); }
+  100% { clip: rect(27px, 9999px, 89px, 0); }
 }
 
-.reveal-text:hover {
-  background-position-x: 0%;
+/* --- DOPAMINE UI --- */
+.dna-card {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.dna-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: rgba(0, 242, 255, 0.5);
+  box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
 }

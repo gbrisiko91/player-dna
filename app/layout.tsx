@@ -18,10 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.variable} ${orbitron.variable} font-body bg-black text-white antialiased overflow-x-hidden`}>
+      <body className={`${inter.variable} ${orbitron.variable} font-body bg-[#030303] text-white antialiased overflow-x-hidden`}>
         {/* Global FX Layer */}
-        <div className="fixed inset-0 pointer-events-none z-50 border-[10px] md:border-[20px] border-white/5" />
-        <div className="fixed inset-0 bg-noise opacity-[0.02] pointer-events-none z-50" />
+        <div className="fixed inset-0 pointer-events-none z-[999] bg-noise opacity-[0.03]" />
         
         <Navbar />
         <div className="relative w-full">

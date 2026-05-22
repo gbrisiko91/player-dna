@@ -1,64 +1,83 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { Dna, ShieldAlert, Cpu, Zap } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 overflow-hidden">
-      {/* Background Layer */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 grid-mesh" />
-        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none" />
-        <div className="glow-orb w-[800px] h-[800px] bg-dna-purple -top-40 -left-40" />
-        <div className="glow-orb w-[600px] h-[600px] bg-dna-neon bottom-0 -right-20" />
+    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 overflow-hidden the-void">
+      {/* Visual FX Layer */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="scanline" />
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-dna-neon opacity-10 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-dna-purple opacity-10 blur-[150px] animate-pulse" />
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+        {/* Top HUD */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="mb-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-4 mb-8"
         >
-          <span className="font-esports text-[10px] tracking-[0.6em] text-dna-purple border border-dna-purple/30 px-6 py-2 rounded-full bg-dna-purple/5 uppercase">
-            Human Intelligence Mapping Protocol
+          <div className="h-px w-12 bg-dna-neon/50" />
+          <span className="font-esports text-[10px] tracking-[0.5em] text-dna-neon uppercase">
+            Protocol: Identity_Scan_v4
           </span>
+          <div className="h-px w-12 bg-dna-neon/50" />
         </motion.div>
 
-        <h1 className="text-mega font-esports mb-4 flex flex-col">
-          <span className="text-outline">RECODE YOUR</span>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-dna-purple to-dna-neon">
-            IDENTITY
-          </span>
+        {/* Main Title */}
+        <h1 className="text-cyber text-6xl md:text-[140px] leading-[0.85] mb-8 tracking-tighter">
+          <motion.span 
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="block text-white"
+          >
+            DISCOVER YOUR
+          </motion.span>
+          <motion.span 
+            initial={{ x: 100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="block text-transparent bg-clip-text bg-gradient-to-r from-dna-neon via-dna-purple to-dna-danger"
+          >
+            PLAYER DNA
+          </motion.span>
         </h1>
 
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-gray-400 font-light text-lg md:text-2xl max-w-2xl mb-12 tracking-tight"
-        >
-          Il tuo rank è un numero. Il tuo DNA è una <span className="text-white font-medium italic">sentenza</span>. 
-          Scopri chi sei realmente quando la pressione sale.
-        </motion.p>
+        <p className="font-light text-xl md:text-3xl text-gray-400 mb-16 max-w-2xl italic">
+          "Rank is a number. DNA is a <span className="text-white font-bold">sentence</span>."
+        </p>
 
+        {/* Call to Action */}
         <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-dna-purple to-dna-neon rounded-none blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-dna-neon to-dna-purple rounded-none blur opacity-40 group-hover:opacity-100 transition duration-500"></div>
           <Link href="/quiz">
-            <button className="relative px-16 py-8 bg-black border border-white/10 font-esports text-xl tracking-[0.4em] uppercase transition-all hover:border-transparent hover:text-white">
-              SBLOCCA DNA
+            <button className="relative px-20 py-8 bg-black border border-white/10 font-esports text-2xl tracking-[0.3em] uppercase group-hover:bg-dna-neon group-hover:text-black transition-all duration-300">
+              Start Scan
             </button>
           </Link>
         </div>
-      </div>
 
-      {/* Side HUD Decor */}
-      <div className="absolute left-10 bottom-10 hidden xl:block border-l border-white/10 pl-4 py-4">
-        <div className="font-esports text-[8px] text-gray-600 mb-2">SYSTEM_STATUS</div>
-        <div className="flex gap-1">
-          {[1,2,3,4,5].map(i => <div key={i} className="w-1 h-3 bg-dna-purple/20" />)}
+        {/* HUD Footprints */}
+        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 w-full border-t border-white/5 pt-12">
+          <HUDItem icon={<ShieldAlert className="w-5 h-5 text-dna-danger" />} label="Toxicity Monitor" value="ACTIVE" />
+          <HUDItem icon={<Cpu className="w-5 h-5 text-dna-neon" />} label="Neural Mapping" value="READY" />
+          <HUDItem icon={<Zap className="w-5 h-5 text-dna-purple" />} label="Clutch Index" value="CALIBRATING" />
         </div>
       </div>
     </section>
+  );
+}
+
+function HUDItem({ icon, label, value }: { icon: any, label: string, value: string }) {
+  return (
+    <div className="flex flex-col items-center md:items-start p-4 bg-white/5 border-l border-white/10">
+      <div className="flex items-center gap-3 mb-2">
+        {icon}
+        <span className="font-esports text-[10px] text-gray-500 tracking-widest uppercase">{label}</span>
+      </div>
+      <span className="font-esports text-lg text-white">{value}</span>
+    </div>
   );
 }

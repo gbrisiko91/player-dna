@@ -12,99 +12,95 @@ export default function ResultCard({ archetype }: ResultCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const traits = [
-    { label: "EGO", value: archetype.traits.ego, icon: <Trophy className="w-3 h-3" /> },
-    { label: "CLUTCH", value: archetype.traits.clutch, icon: <Target className="w-3 h-3" /> },
-    { label: "TOXIC", value: archetype.traits.toxic, icon: <Zap className="w-3 h-3" /> },
-    { label: "TACTICS", value: archetype.traits.tactics, icon: <Brain className="w-3 h-3" /> },
-    { label: "RESILIENCE", value: archetype.traits.resilience, icon: <Shield className="w-3 h-3" /> },
+    { label: "EGO INDEX", value: archetype.traits.ego, color: "text-white" },
+    { label: "CLUTCH FACTOR", value: archetype.traits.clutch, color: "text-dna-neon" },
+    { label: "TOXICITY LEVEL", value: archetype.traits.toxic, color: "text-dna-danger" },
+    { label: "TACTICAL BRAIN", value: archetype.traits.tactics, color: "text-dna-purple" },
+    { label: "MENTAL SHIELD", value: archetype.traits.resilience, color: "text-dna-toxic" },
   ];
 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 50, rotateY: 20 }}
-      animate={{ opacity: 1, y: 0, rotateY: 0 }}
-      className="relative w-full max-w-sm mx-auto glass-card rounded-[40px] p-10 overflow-hidden scanline shadow-[0_0_100px_rgba(0,0,0,1)]"
+      initial={{ opacity: 0, scale: 0.8, rotateY: 30 }}
+      animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+      className="relative w-full max-w-[400px] aspect-[9/16] bg-black border-[3px] border-white/10 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]"
     >
-      {/* Background Accent */}
-      <div 
-        className="absolute -top-40 -right-40 w-96 h-96 blur-[120px] opacity-30"
-        style={{ backgroundColor: archetype.color }}
-      />
-      
-      {/* Rarity Tag */}
-      <div className="absolute top-8 left-8">
-        <div className="px-3 py-1 border border-white/10 rounded-full bg-black/40 backdrop-blur-md">
-          <span className="text-[9px] font-esports text-white/60 tracking-widest uppercase">
-            Rarity: <span style={{ color: archetype.color }}>{archetype.rarity}%</span>
-          </span>
+      {/* Background FX */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 grid-mesh opacity-20" />
+        <div className="scanline" />
+        <div 
+          className="absolute -top-20 -right-20 w-80 h-80 blur-[120px] opacity-40"
+          style={{ backgroundColor: archetype.color }}
+        />
+      </div>
+
+      {/* Top Bar */}
+      <div className="absolute top-0 left-0 right-0 h-16 border-b border-white/10 flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-20">
+        <span className="font-esports text-[10px] tracking-[0.4em] text-white">NEURAL_SCAN_SUCCESS</span>
+        <div className="flex gap-1">
+          <div className="w-1 h-3 bg-dna-neon" />
+          <div className="w-1 h-3 bg-dna-neon/50" />
+          <div className="w-1 h-3 bg-dna-neon/20" />
         </div>
       </div>
 
-      {/* Header */}
-      <div className="text-center mt-12 mb-10">
+      {/* Content */}
+      <div className="relative z-10 p-8 pt-24 h-full flex flex-col">
+        <div className="mb-2">
+          <span className="font-esports text-[10px] text-gray-500 tracking-widest uppercase">Identified Archetype:</span>
+        </div>
         <h2 
-          className="text-5xl font-esports italic font-black uppercase tracking-tighter leading-none mb-2"
-          style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
+          className="text-6xl font-esports italic font-black uppercase tracking-tighter leading-none mb-6"
+          style={{ color: archetype.color, textShadow: `0 0 30px ${archetype.color}66` }}
         >
           {archetype.name}
         </h2>
-        <span className="text-[10px] font-esports tracking-[0.4em] text-white/30 uppercase">
-          Neural Match Confirmed
-        </span>
-      </div>
 
-      {/* Central Visual */}
-      <div className="relative h-56 flex items-center justify-center mb-10">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="w-48 h-48 rounded-full border border-white/5 border-dashed" 
-          />
-          <motion.div 
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute w-56 h-56 rounded-full border border-white/5" 
-          />
-        </div>
-        
-        <div className="relative z-10 w-32 h-32 flex items-center justify-center bg-black/40 rounded-full border border-white/10 backdrop-blur-xl group">
-          <Fingerprint className="w-16 h-16 text-white group-hover:scale-110 transition-transform duration-500" style={{ color: archetype.color }} />
-        </div>
-      </div>
-
-      {/* Traits */}
-      <div className="space-y-5 mb-12">
-        {traits.map((trait) => (
-          <div key={trait.label}>
-            <div className="flex justify-between items-center text-[9px] font-esports text-white/40 mb-2 uppercase tracking-widest">
-              <span className="flex items-center gap-2">{trait.icon} {trait.label}</span>
-              <span style={{ color: archetype.color }}>{trait.value}%</span>
-            </div>
-            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${trait.value}%` }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                className="h-full"
-                style={{ backgroundColor: archetype.color, boxShadow: `0 0 15px ${archetype.color}` }}
+        {/* Central Visual - Holographic */}
+        <div className="relative flex-1 flex items-center justify-center my-8">
+           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
+           <div className="relative w-48 h-48 border-2 border-dashed border-white/10 rounded-full flex items-center justify-center">
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-2 border border-dna-neon/20 rounded-full"
               />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Branding */}
-      <div className="pt-8 border-t border-white/5 flex justify-between items-center">
-        <div>
-          <p className="text-[10px] font-esports text-white/20 uppercase tracking-widest mb-1">Generated by</p>
-          <p className="text-xs font-esports font-black italic tracking-tighter">PLAYER<span className="text-dna-neon">DNA</span></p>
+              <Fingerprint className="w-24 h-24" style={{ color: archetype.color }} />
+           </div>
         </div>
-        <div className="flex gap-3">
-          <button className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/5">
-            <Share2 className="w-5 h-5 text-white" />
-          </button>
+
+        {/* Stats */}
+        <div className="space-y-6 mb-12">
+          {traits.map((trait) => (
+            <div key={trait.label}>
+              <div className="flex justify-between items-end mb-2">
+                <span className="font-esports text-[9px] text-gray-500 tracking-widest uppercase">{trait.label}</span>
+                <span className={`font-esports text-sm font-bold ${trait.color}`}>{trait.value}%</span>
+              </div>
+              <div className="h-[2px] bg-white/5 w-full relative">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${trait.value}%` }}
+                  transition={{ duration: 2, delay: 0.5 }}
+                  className="absolute inset-y-0 left-0"
+                  style={{ backgroundColor: archetype.color, boxShadow: `0 0 10px ${archetype.color}` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-auto flex justify-between items-end">
+          <div>
+            <span className="block font-esports text-[8px] text-gray-600 uppercase mb-1">Global Frequency</span>
+            <span className="font-esports text-2xl text-white italic">{archetype.rarity}%</span>
+          </div>
+          <div className="text-right">
+             <span className="block font-esports text-[10px] text-dna-neon font-black italic">PLAYERDNA.GG</span>
+          </div>
         </div>
       </div>
     </motion.div>
