@@ -2,70 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --dna-purple: 139, 92, 246;
-  --dna-blue: 59, 130, 246;
-  --dna-neon: 0, 242, 255;
+@layer base {
+  :root {
+    --dna-purple: 139, 92, 246;
+    --dna-neon: 0, 242, 255;
+    --dna-toxic: 173, 255, 47;
+    --dna-black: 5, 5, 5;
+  }
+
+  body {
+    @apply bg-black text-white antialiased selection:bg-dna-purple/30;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+  }
 }
 
-body {
-  background-color: #050505;
-  color: white;
-  overflow-x: hidden;
-  selection-background: rgba(139, 92, 246, 0.3);
+/* Texture Noise - Fondamentale per il look premium */
+.bg-noise {
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  filter: contrast(170%) brightness(1000%);
 }
 
-/* Background Cinematico */
-.bg-cyber-mesh {
-  background-color: #050505;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, rgba(59, 130, 246, 0.1) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, rgba(0, 242, 255, 0.15) 0, transparent 50%);
-}
-
-.cyber-grid-overlay {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black, transparent 80%);
-}
-
-/* Tipografia Glow */
-.text-glow-purple {
-  text-shadow: 0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.3);
-}
-
-.text-glow-neon {
-  text-shadow: 0 0 15px rgba(0, 242, 255, 0.6), 0 0 30px rgba(0, 242, 255, 0.3);
-}
-
-/* Glassmorphism estremo */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-}
-
-.glass-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Animazioni */
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
-
-.scanline::after {
-  content: "";
+/* Gradienti Volumetrici */
+.glow-orb {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(to bottom, transparent, rgba(139, 92, 246, 0.05), transparent);
-  animation: scanline 8s linear infinite;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
   pointer-events: none;
+  z-index: 0;
+}
+
+/* Cyber Grids */
+.grid-mesh {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black, transparent 90%);
+}
+
+/* Tipografia Brutalista */
+.text-mega {
+  font-size: clamp(3rem, 15vw, 12rem);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  color: transparent;
+}
+
+/* Glassmorphism V2 */
+.glass-heavy {
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(40px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Animazioni di Scorrimento */
+.reveal-text {
+  background: linear-gradient(to right, white 50%, rgba(255, 255, 255, 0.1) 50%);
+  background-size: 200% 100%;
+  background-position-x: 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  transition: background-position 1s ease-out;
+}
+
+.reveal-text:hover {
+  background-position-x: 0%;
 }

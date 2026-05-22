@@ -1,63 +1,63 @@
 "use client";
 import { motion } from "framer-motion";
-import { Zap, Brain, Share2, Users, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 overflow-hidden bg-cyber-mesh">
-      {/* Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid-overlay pointer-events-none" />
-      
-      {/* Decorative Orbs */}
-      <motion.div 
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-dna-purple blur-[120px] rounded-full" 
-      />
-      <motion.div 
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.15, 0.1] }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-dna-blue blur-[120px] rounded-full" 
-      />
-
-      <div className="relative z-10 text-center max-w-5xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="inline-block py-1 px-4 border border-dna-purple/30 bg-dna-purple/5 text-dna-purple font-esports text-[10px] tracking-[0.4em] mb-8 uppercase rounded-full">
-            Neural Identification Protocol Active
-          </span>
-          
-          <h1 className="text-7xl md:text-[120px] font-esports italic font-black mb-8 tracking-tighter leading-none">
-            PLAYER<span className="text-transparent bg-clip-text bg-gradient-to-r from-dna-neon via-dna-purple to-dna-blue text-glow-neon">DNA</span>
-          </h1>
-
-          <p className="text-xl md:text-3xl text-gray-400 font-light mb-16 max-w-3xl mx-auto leading-relaxed">
-            Smetti di contare i tuoi pixel. <br />
-            <span className="text-white font-medium italic">Inizia a mappare la tua coscienza competitiva.</span>
-          </p>
-
-          <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
-            <Link href="/quiz">
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(139, 92, 246, 0.5)" }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative px-12 py-6 bg-dna-purple rounded-none font-esports text-xl tracking-[0.2em] skew-x-[-12deg] transition-all overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative inline-block skew-x-[12deg] text-white">AVVIA SEQUENZIAMENTO</span>
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
+    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-4 overflow-hidden">
+      {/* Background Layer */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 grid-mesh" />
+        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none" />
+        <div className="glow-orb w-[800px] h-[800px] bg-dna-purple -top-40 -left-40" />
+        <div className="glow-orb w-[600px] h-[600px] bg-dna-neon bottom-0 -right-20" />
       </div>
 
-      {/* Floating UI Elements */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce opacity-20">
-        <ChevronDown className="w-8 h-8" />
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="mb-6"
+        >
+          <span className="font-esports text-[10px] tracking-[0.6em] text-dna-purple border border-dna-purple/30 px-6 py-2 rounded-full bg-dna-purple/5 uppercase">
+            Human Intelligence Mapping Protocol
+          </span>
+        </motion.div>
+
+        <h1 className="text-mega font-esports mb-4 flex flex-col">
+          <span className="text-outline">RECODE YOUR</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-dna-purple to-dna-neon">
+            IDENTITY
+          </span>
+        </h1>
+
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-gray-400 font-light text-lg md:text-2xl max-w-2xl mb-12 tracking-tight"
+        >
+          Il tuo rank è un numero. Il tuo DNA è una <span className="text-white font-medium italic">sentenza</span>. 
+          Scopri chi sei realmente quando la pressione sale.
+        </motion.p>
+
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-dna-purple to-dna-neon rounded-none blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+          <Link href="/quiz">
+            <button className="relative px-16 py-8 bg-black border border-white/10 font-esports text-xl tracking-[0.4em] uppercase transition-all hover:border-transparent hover:text-white">
+              SBLOCCA DNA
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Side HUD Decor */}
+      <div className="absolute left-10 bottom-10 hidden xl:block border-l border-white/10 pl-4 py-4">
+        <div className="font-esports text-[8px] text-gray-600 mb-2">SYSTEM_STATUS</div>
+        <div className="flex gap-1">
+          {[1,2,3,4,5].map(i => <div key={i} className="w-1 h-3 bg-dna-purple/20" />)}
+        </div>
       </div>
     </section>
   );
