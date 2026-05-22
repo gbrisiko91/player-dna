@@ -65,7 +65,7 @@ export default function ResultPage({ params }: { params: { token: string } }) {
           <p className="text-gray-400">Ecco l'identità gamer analizzata tramite PlayerDNA.</p>
         </div>
 
-        <ResultCard archetype={result} />
+        <ResultCard archetype={result} nickname={result.nickname || 'SUBJECT'} />
 
         <div className="flex flex-col items-center gap-6">
           <p className="text-gray-500 font-esports text-xs uppercase tracking-widest text-center">

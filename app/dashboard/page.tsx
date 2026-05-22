@@ -58,7 +58,10 @@ export default function Dashboard() {
           <div className="lg:col-span-1">
             <h3 className="font-esports text-xs text-gray-500 mb-6 uppercase tracking-[0.2em]">DNA Attuale</h3>
             {history[0] ? (
-              <ResultCard archetype={history[0].archetype} />
+              <ResultCard 
+                archetype={history[0].archetype} 
+                nickname={user.user_metadata.full_name || 'PLAYER'} 
+              />
             ) : (
               <div className="p-12 border border-white/5 glass-morphism rounded-3xl text-center">
                 <p className="text-gray-500 text-sm mb-6 uppercase font-esports">Nessun DNA rilevato</p>

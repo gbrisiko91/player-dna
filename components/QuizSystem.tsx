@@ -30,6 +30,7 @@ export default function QuizSystem() {
       .insert([
         { 
           user_id: user?.id || null,
+          nickname: nickname,
           archetype_slug: dna.slug, 
           scores: finalScores, 
           share_token: token 
