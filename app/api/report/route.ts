@@ -245,7 +245,9 @@ function drawSeal(page: PDFPage, x: number, y: number, nick: string, font: any, 
             }
         }
     }
-    page.drawText(nick.toUpperCase(), { x: x, y: y + 20, size: 10, font, color: COLORS.white, width: size, align: 'center' as any });
+    const nickText = nick.toUpperCase();
+    const nickWidth = font.widthOfTextAtSize(nickText, 10);
+    page.drawText(nickText, { x: x + (size/2) - (nickWidth/2), y: y + 20, size: 10, font, color: COLORS.white });
 }
 
 function drawRadarChart(page: PDFPage, x: number, y: number, size: number, values: number[], labels: string[], color: any, font: any) {
