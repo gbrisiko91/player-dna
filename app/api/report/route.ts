@@ -157,7 +157,7 @@ export async function GET(req: Request) {
 
     const pdfBytes = await pdfDoc.save();
 
-    return new Response(pdfBytes, {
+    return new Response(pdfBytes as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Cache-Control': 'no-cache',
