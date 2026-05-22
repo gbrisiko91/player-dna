@@ -10,15 +10,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // Color Palette
 const COLORS = {
-  bg: rgb(0.01, 0.01, 0.01),
+  bg: rgb(0.02, 0.02, 0.03),
   black: rgb(0, 0, 0),
-  white: rgb(1, 1, 1),
-  neon: rgb(0, 0.95, 1),
-  purple: rgb(0.66, 0.33, 1),
-  danger: rgb(1, 0.29, 0.17),
-  gray: rgb(0.3, 0.3, 0.3),
-  lightGray: rgb(0.6, 0.6, 0.6),
-  darkGray: rgb(0.1, 0.1, 0.1),
+  white: rgb(0.95, 0.95, 0.98),
+  neon: rgb(0, 0.8, 1),
+  accent: rgb(0.7, 0.2, 1), // Purple-ish
+  danger: rgb(0.9, 0.1, 0.1),
+  gray: rgb(0.2, 0.2, 0.25),
+  dim: rgb(0.1, 0.1, 0.12),
 };
 
 export async function GET(req: Request) {
@@ -33,221 +32,231 @@ export async function GET(req: Request) {
 
     const { archetype_id, lang, nickname } = session.metadata as any;
     const archetype = ARCHETYPES.find(a => a.id === archetype_id) || ARCHETYPES[0];
-    const t = (translations as any)[lang || 'en'];
     
     const pdfDoc = await PDFDocument.create();
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontCourier = await pdfDoc.embedFont(StandardFonts.CourierBold); // For technical metadata
 
-    // --- PAGE 1: COVER ---
+    // --- PAGE 1: THE DOSSIER COVER ---
     const page1 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page1);
-    drawHeader(page1, 'NEURAL_DOSSIER_COVER', fontBold);
+    drawHUD(page1, fontCourier, '001/006');
     
-    // Large Title
-    page1.drawText('PLAYER', { x: 50, y: 700, size: 60, font: fontBold, color: COLORS.white });
-    page1.drawText('DNA', { x: 300, y: 700, size: 60, font: fontBold, color: COLORS.neon });
+    // Physical Folder Look
+    page1.drawRectangle({ x: 40, y: 700, width: 300, height: 100, color: COLORS.dim, borderColor: COLORS.neon, borderWidth: 2 });
+    page1.drawText('IDENTITY_ANALYSIS', { x: 50, y: 770, size: 24, font: fontBold, color: COLORS.white });
+    page1.drawText('NEURAL_LOG: ' + sessionId.substring(0, 8).toUpperCase(), { x: 50, y: 750, size: 8, font: fontCourier, color: COLORS.neon });
     
-    // Subject Block
-    drawClassifiedBox(page1, 50, 500, 350, 150, fontBold);
-    page1.drawText('SUBJECT_IDENTITY:', { x: 70, y: 620, size: 10, font: fontBold, color: COLORS.neon });
-    page1.drawText(nickname.toUpperCase(), { x: 70, y: 580, size: 30, font: fontBold, color: COLORS.white });
-    page1.drawText(`ARCHETYPE: ${lang === 'it' ? archetype.name_it.toUpperCase() : archetype.name.toUpperCase()}`, { x: 70, y: 540, size: 12, font: fontBold, color: COLORS.white });
-    
-    // Seal
-    drawSeal(page1, 420, 500, nickname, fontBold);
-    
-    // Bottom Warning
-    page1.drawRectangle({ x: 0, y: 0, width: 595, height: 100, color: COLORS.black });
-    page1.drawText('WARNING: CLASSIFIED INFORMATION. UNAUTHORIZED ACCESS IS PROHIBITED.', { x: 50, y: 50, size: 8, font: fontBold, color: COLORS.danger });
-    page1.drawText('GEN_PROTOCOL: PlayerDNA_Neural_Engine_v8.2', { x: 50, y: 35, size: 6, font: fontRegular, color: COLORS.gray });
+    // Large "CLASSIFIED" stamp
+    page1.drawText('CLASSIFIED', { x: 400, y: 750, size: 40, font: fontBold, color: COLORS.danger, opacity: 0.2, rotate: { type: 'degrees' as any, angle: -15 } as any });
 
-    // --- PAGE 2: NEURAL LANDSCAPE ---
+    // Subject Identity
+    page1.drawRectangle({ x: 40, y: 450, width: 515, height: 200, color: COLORS.black, opacity: 0.5 });
+    page1.drawText('SUBJECT_ID:', { x: 60, y: 620, size: 10, font: fontCourier, color: COLORS.neon });
+    page1.drawText(nickname.toUpperCase(), { x: 60, y: 570, size: 45, font: fontBold, color: COLORS.white });
+    
+    const arcName = lang === 'it' ? archetype.name_it.toUpperCase() : archetype.name.toUpperCase();
+    page1.drawText('ARCHETYPE_DESIGNATION:', { x: 60, y: 530, size: 10, font: fontCourier, color: COLORS.neon });
+    page1.drawText(arcName, { x: 60, y: 500, size: 25, font: fontBold, color: COLORS.accent });
+
+    // Metadata streams
+    drawMetadataStream(page1, 560, 100, 700, fontCourier);
+
+    // --- PAGE 2: NEURAL PROFILE & MOTIVATION ---
     const page2 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page2);
-    drawHeader(page2, 'SECTION_01 // NEURAL_LANDSCAPE', fontBold);
+    drawHUD(page2, fontCourier, '002/006');
     
-    page2.drawText('NEURAL_MAPPING_ANALYSIS', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
-    const analysis = lang === 'it' ? archetype.motivation_it : archetype.motivation;
-    drawWrappedText(page2, analysis, 50, 720, 500, 12, fontRegular, COLORS.lightGray);
+    page2.drawText('01. NEURAL_CORE_MAPPING', { x: 40, y: 780, size: 18, font: fontBold, color: COLORS.white });
     
-    // Decorative "Brain Scan" lines
-    for(let i=0; i<10; i++) {
-        page2.drawLine({
-            start: { x: 50, y: 550 - (i*5) },
-            end: { x: 50 + (Math.random() * 500), y: 550 - (i*5) },
-            thickness: 0.5,
-            color: COLORS.neon,
-            opacity: 0.3
-        });
-    }
+    const motivation = lang === 'it' ? archetype.motivation_it : archetype.motivation;
+    drawTechnicalBox(page2, 40, 580, 515, 180, fontBold);
+    drawWrappedText(page2, motivation, 60, 730, 480, 13, fontRegular, COLORS.white);
     
-    // Threat Box
-    drawClassifiedBox(page2, 50, 350, 500, 100, fontBold, COLORS.danger);
-    page2.drawText('THREAT_CLASSIFICATION: OMEGA (HIGH_PRIORITY)', { x: 70, y: 410, size: 12, font: fontBold, color: COLORS.danger });
-    page2.drawText('Behavioral patterns indicate high-risk predator behavior in competitive environments.', { x: 70, y: 380, size: 10, font: fontRegular, color: COLORS.white });
+    // Glitchy heatmap visual
+    drawHeatmap(page2, 40, 300, 515, 250);
 
-    // --- PAGE 3: PSYCHOLOGICAL RADAR ---
+    // --- PAGE 3: PSYCHOMETRIC MATRIX (RADAR) ---
     const page3 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page3);
-    drawHeader(page3, 'SECTION_02 // PSYCHOMETRIC_DATA', fontBold);
+    drawHUD(page3, fontCourier, '003/006');
     
-    page3.drawText('IDENTITY_RADAR_SCAN', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
-    drawRadarChart(page3, 297, 550, 150, [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience], ['EGO', 'CLUTCH', 'TOXIC', 'TACTICS', 'RESILIENCE'], COLORS.neon, fontBold);
+    page3.drawText('02. PSYCHOMETRIC_MATRIX', { x: 40, y: 780, size: 18, font: fontBold, color: COLORS.white });
     
-    // Traits description
-    let traitY = 350;
-    Object.entries(archetype.traits).forEach(([key, val]) => {
-        page3.drawText(`${key.toUpperCase()}:`, { x: 100, y: traitY, size: 10, font: fontBold, color: COLORS.neon });
-        page3.drawRectangle({ x: 200, y: traitY - 2, width: 250, height: 10, color: COLORS.darkGray });
-        page3.drawRectangle({ x: 200, y: traitY - 2, width: (val/100) * 250, height: 10, color: COLORS.neon });
-        page3.drawText(`${val}%`, { x: 460, y: traitY, size: 10, font: fontBold, color: COLORS.white });
-        traitY -= 30;
+    const traits = [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience];
+    const labels = ['EGO', 'CLUTCH', 'TOXIC', 'TACTICS', 'RESIL'];
+    drawRadarChart(page3, 297, 520, 180, traits, labels, COLORS.neon, fontBold);
+    
+    // Data Bars
+    let barY = 320;
+    labels.forEach((l, i) => {
+        page3.drawText(l, { x: 100, y: barY, size: 10, font: fontCourier, color: COLORS.neon });
+        drawGlowBar(page3, 180, barY - 2, 300, 12, traits[i] / 100, COLORS.neon);
+        page3.drawText(`${traits[i]}%`, { x: 490, y: barY, size: 10, font: fontBold, color: COLORS.white });
+        barY -= 35;
     });
 
-    // --- PAGE 4: COMBAT BEHAVIOR ---
+    // --- PAGE 4: BEHAVIORAL SYNC & THREAT ---
     const page4 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page4);
-    drawHeader(page4, 'SECTION_03 // COMBAT_PSYCHOLOGY', fontBold);
+    drawHUD(page4, fontCourier, '004/006');
     
-    page4.drawText('TACTICAL_EFFICIENCY_MATRIX', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
+    page4.drawText('03. BEHAVIORAL_STABILITY_SCAN', { x: 40, y: 780, size: 18, font: fontBold, color: COLORS.white });
     
-    // Predator Index
-    page4.drawText('PREDATOR_INDEX', { x: 50, y: 680, size: 14, font: fontBold, color: COLORS.danger });
-    page4.drawRectangle({ x: 50, y: 650, width: 500, height: 20, color: COLORS.darkGray });
-    page4.drawRectangle({ x: 50, y: 650, width: 450, height: 20, color: COLORS.danger });
-    page4.drawText('92% - LETHAL', { x: 50, y: 630, size: 8, font: fontBold, color: COLORS.danger });
+    // Wave
+    page4.drawText('NEURAL_OSCILLATION_IN_CLUTCH', { x: 60, y: 730, size: 10, font: fontCourier, color: COLORS.neon });
+    drawTechnicalWave(page4, 40, 580, 515, 120, COLORS.neon);
+    
+    // Threat Level
+    drawTechnicalBox(page4, 40, 350, 515, 150, fontBold, COLORS.danger);
+    page4.drawText('THREAT_LEVEL: OMEGA_PROTOCOL', { x: 60, y: 470, size: 14, font: fontBold, color: COLORS.danger });
+    const threatDesc = "Subject demonstrates extreme competitive variance. High probability of ranked dominance. Social toxicity levels are monitored but within 'lethal operator' parameters.";
+    drawWrappedText(page4, threatDesc, 60, 440, 480, 11, fontRegular, COLORS.white);
 
-    // Wave graph simulation
-    page4.drawText('CLUTCH_NEURAL_STABILITY', { x: 50, y: 550, size: 14, font: fontBold, color: COLORS.neon });
-    drawNeuralWave(page4, 50, 450, 500, 80, COLORS.neon);
-
-    // --- PAGE 5: TILT & EMOTIONAL ---
+    // --- PAGE 5: RARITY & PERFORMANCE ---
     const page5 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page5);
-    drawHeader(page5, 'SECTION_04 // EMOTIONAL_PROFILE', fontBold);
+    drawHUD(page5, fontCourier, '005/006');
     
-    page5.drawText('MENTAL_RESILIENCE_SCAN', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
+    page5.drawText('04. PERFORMANCE_RARITY_INDEX', { x: 40, y: 780, size: 18, font: fontBold, color: COLORS.white });
     
-    const tiltText = "Analysis indicates a high threshold for emotional interference. Subject maintains mechanical efficiency even during negative social stimuli (toxicity). Potential for leadership in crisis situations.";
-    drawWrappedText(page5, tiltText, 50, 700, 500, 11, fontRegular, COLORS.lightGray);
+    // Big Rarity
+    page5.drawText('TOP 2.7%', { x: 60, y: 600, size: 90, font: fontBold, color: COLORS.neon });
+    page5.drawText('ELITE_TIER_PROFILE_DETECTED', { x: 65, y: 570, size: 14, font: fontBold, color: COLORS.white });
     
-    // Toxicity Spectrum
-    page5.drawText('TOXICITY_SPECTRUM', { x: 50, y: 600, size: 12, font: fontBold, color: COLORS.white });
-    for(let i=0; i<10; i++) {
-        page5.drawRectangle({ x: 50 + (i*50), y: 570, width: 45, height: 10, color: i < 3 ? COLORS.neon : COLORS.darkGray });
-    }
-    page5.drawText('LEVEL: LOW (CONTROLLED)', { x: 50, y: 555, size: 8, font: fontBold, color: COLORS.neon });
+    // Optimization Columns
+    page5.drawText('OPTIMIZATION_VECTORS:', { x: 60, y: 500, size: 10, font: fontCourier, color: COLORS.neon });
+    drawTechnicalBox(page5, 40, 250, 515, 220, fontBold);
+    const vecText = "1. Force late-game scenarios to exploit high CLUTCH index.\n2. Utilize EGO dominance to lead team communication.\n3. Minimize early-round biological stress to sustain peak mechanical performance.";
+    drawWrappedText(page5, vecText, 60, 440, 480, 12, fontRegular, COLORS.white);
 
-    // --- PAGE 6: OPTIMIZATION ---
+    // --- PAGE 6: OFFICIAL CERTIFICATION ---
     const page6 = pdfDoc.addPage([595.28, 841.89]);
     drawBackground(page6);
-    drawHeader(page6, 'SECTION_05 // OPTIMIZATION_VECTORS', fontBold);
+    drawHUD(page6, fontCourier, '006/006');
     
-    page6.drawText('NEURAL_PERFORMANCE_VECTORS', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
+    page6.drawText('05. OFFICIAL_NEURAL_VERIFICATION', { x: 40, y: 780, size: 18, font: fontBold, color: COLORS.white });
     
-    const vec1Title = "VEC_01: ASYMMETRIC_ENGAGEMENT";
-    const vec1Desc = "Leverage your high clutch coefficient by forcing late-round scenarios. Minimize early-round exposure to preserve neural focus for high-leverage moments.";
-    page6.drawText(vec1Title, { x: 50, y: 700, size: 12, font: fontBold, color: COLORS.neon });
-    drawWrappedText(page6, vec1Desc, 50, 680, 500, 10, fontRegular, COLORS.lightGray);
+    // The Seal
+    drawPremiumSeal(page6, 297 - 125, 400, 250, nickname, fontBold, fontCourier);
+    
+    // Verification Text
+    const certY = 320;
+    page6.drawText('CERTIFICATE_OF_AUTHENTICITY', { x: 150, y: certY, size: 14, font: fontBold, color: COLORS.white });
+    page6.drawText(`VERIFICATION_HASH: ${sessionId.substring(0, 24).toUpperCase()}`, { x: 150, y: certY - 20, size: 8, font: fontCourier, color: COLORS.neon });
+    page6.drawText('THIS_DOSSIER_IS_NEURALLY_LINKED_TO_SUBJECT_DNA', { x: 150, y: certY - 35, size: 7, font: fontRegular, color: COLORS.gray });
 
-    const vec2Title = "VEC_02: LEADERSHIP_SYNC_PROTOCOL";
-    const vec2Desc = "Your ego index suggests high confidence. Use this to stabilize teammates during losing streaks. Direct communication should be clinical and objective.";
-    page6.drawText(vec2Title, { x: 50, y: 600, size: 12, font: fontBold, color: COLORS.neon });
-    drawWrappedText(page6, vec2Desc, 50, 580, 500, 10, fontRegular, COLORS.lightGray);
-
-    // --- PAGE 7: RARITY & GLOBAL ---
-    const page7 = pdfDoc.addPage([595.28, 841.89]);
-    drawBackground(page7);
-    drawHeader(page7, 'SECTION_06 // GLOBAL_COMPARISON', fontBold);
-    
-    page7.drawText('POPULATION_RARITY_INDEX', { x: 50, y: 750, size: 18, font: fontBold, color: COLORS.white });
-    
-    page7.drawText('TOP 2.7%', { x: 50, y: 650, size: 80, font: fontBold, color: COLORS.neon });
-    page7.drawText('OF ANALYZED POPULATION', { x: 50, y: 570, size: 14, font: fontBold, color: COLORS.white });
-    
-    drawClassifiedBox(page7, 50, 300, 500, 200, fontBold, COLORS.purple);
-    page7.drawText('RARE PROFILE DETECTED', { x: 70, y: 460, size: 20, font: fontBold, color: COLORS.purple });
-    drawWrappedText(page7, 'The subject belongs to an elite tier of psychological profiles capable of sustaining professional-grade neural load.', 70, 430, 460, 10, fontRegular, COLORS.white);
-
-    // --- PAGE 8: FINAL VERIFICATION ---
-    const page8 = pdfDoc.addPage([595.28, 841.89]);
-    const { width: p8w } = page8.getSize();
-    drawBackground(page8);
-    drawHeader(page8, 'SECTION_07 // FINAL_VERIFICATION', fontBold);
-    
-    drawSeal(page8, 197, 450, nickname, fontBold, 200);
-    
-    page8.drawText('SCAN_AUTHENTICITY_CONFIRMED', { x: p8w/2 - 100, y: 400, size: 12, font: fontBold, color: COLORS.neon });
-    page8.drawText(`CERTIFICATE_ID: ${sessionId?.substring(0, 12).toUpperCase()}`, { x: p8w/2 - 100, y: 380, size: 8, font: fontBold, color: COLORS.white });
-    
-    page8.drawText('NO_HUMAN_MODIFICATION_DETECTED', { x: p8w/2 - 100, y: 360, size: 8, font: fontBold, color: COLORS.gray });
-    
-    page8.drawText('RECOMMENDED_RESCAN_DATE: 2026-06-22', { x: 50, y: 150, size: 10, font: fontBold, color: COLORS.white });
-    
-    // Final Footer
-    const footerText = 'CONFIDENTIAL PLAYERDNA DOSSIER // GENERATED BY NEURAL_ENGINE_S26';
-    const footerWidth = fontBold.widthOfTextAtSize(footerText, 8);
-    page8.drawText(footerText, { x: p8w/2 - footerWidth/2, y: 50, size: 8, font: fontBold, color: COLORS.gray });
+    // Footer
+    page6.drawText('PLAYERDNA // CYBER-PSYCHOLOGY LAB // PROJECT_AURORA', { x: 40, y: 50, size: 8, font: fontCourier, color: COLORS.gray });
 
     const pdfBytes = await pdfDoc.save();
-
-    return new Response(pdfBytes as any, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Cache-Control': 'no-cache',
-      },
-    });
+    return new Response(pdfBytes as any, { headers: { 'Content-Type': 'application/pdf' } });
   } catch (err: any) {
-    console.error('PDF Generation Error:', err);
-    return new Response(JSON.stringify({ error: err.message }), { 
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
 }
 
-// --- HELPER DRAWING FUNCTIONS ---
+// --- NEW HIGH-END DRAWING HELPERS ---
 
+function drawHUD(page: PDFPage, font: any, pageLabel: string) {
+    const { width, height } = page.getSize();
+    const margin = 30;
+    
+    // Corner brackets
+    const cs = 20; // corner size
+    page.drawLine({ start: { x: margin, y: margin + cs }, end: { x: margin, y: margin }, thickness: 2, color: COLORS.neon });
+    page.drawLine({ start: { x: margin, y: margin }, end: { x: margin + cs, y: margin }, thickness: 2, color: COLORS.neon });
+    
+    page.drawLine({ start: { x: width - margin, y: margin + cs }, end: { x: width - margin, y: margin }, thickness: 2, color: COLORS.neon });
+    page.drawLine({ start: { x: width - margin, y: margin }, end: { x: width - margin - cs, y: margin }, thickness: 2, color: COLORS.neon });
+    
+    page.drawLine({ start: { x: margin, y: height - margin - cs }, end: { x: margin, y: height - margin }, thickness: 2, color: COLORS.neon });
+    page.drawLine({ start: { x: margin, y: height - margin }, end: { x: margin + cs, y: height - margin }, thickness: 2, color: COLORS.neon });
+    
+    page.drawLine({ start: { x: width - margin, y: height - margin - cs }, end: { x: width - margin, y: height - margin }, thickness: 2, color: COLORS.neon });
+    page.drawLine({ start: { x: width - margin, y: height - margin }, end: { x: width - margin - cs, y: height - margin }, thickness: 2, color: COLORS.neon });
+
+    // Technical Labels
+    page.drawText('PLAYER_DNA_SYSTEM_v2.1', { x: margin + 25, y: height - margin - 10, size: 6, font, color: COLORS.neon });
+    page.drawText('LATENCY: 14ms // SYNC: STABLE', { x: width - margin - 150, y: height - margin - 10, size: 6, font, color: COLORS.neon });
+    page.drawText(`PAGE_UID: ${pageLabel}`, { x: width - margin - 60, y: margin + 5, size: 6, font, color: COLORS.neon });
+}
+
+function drawTechnicalBox(page: PDFPage, x: number, y: number, w: number, h: number, font: any, color: any = COLORS.neon) {
+    page.drawRectangle({ x, y, width: w, height: h, borderColor: color, borderWidth: 1, opacity: 0.3 });
+    // Tab header
+    page.drawRectangle({ x, y: y + h - 15, width: 80, height: 15, color });
+    page.drawText('METRIC_DATA', { x: x + 5, y: y + h - 11, size: 7, font, color: COLORS.black });
+}
+
+function drawHeatmap(page: PDFPage, x: number, y: number, w: number, h: number) {
+    for(let i=0; i<30; i++) {
+        const rx = Math.random() * w;
+        const ry = Math.random() * h;
+        const rw = Math.random() * 50;
+        const rh = Math.random() * 50;
+        page.drawEllipse({ x: x + rx, y: y + ry, xRadius: rw, yRadius: rh, color: COLORS.neon, opacity: 0.05 });
+    }
+}
+
+function drawGlowBar(page: PDFPage, x: number, y: number, w: number, h: number, percent: number, color: any) {
+    page.drawRectangle({ x, y, width: w, height: h, color: COLORS.dim });
+    page.drawRectangle({ x, y, width: w * percent, height: h, color });
+    // Add glow line
+    page.drawLine({ start: { x, y: y + h }, end: { x: x + w * percent, y: y + h }, thickness: 1.5, color, opacity: 0.8 });
+}
+
+function drawTechnicalWave(page: PDFPage, x: number, y: number, w: number, h: number, color: any) {
+    let prev = { x, y: y + h/2 };
+    for(let i=0; i<w; i+=5) {
+        const next = { x: x + i, y: y + h/2 + Math.sin(i * 0.1) * (h/3) * (Math.random() * 0.5 + 0.5) };
+        page.drawLine({ start: prev, end: next, thickness: 1, color });
+        prev = next;
+    }
+}
+
+function drawMetadataStream(page: PDFPage, x: number, y: number, h: number, font: any) {
+    for(let i=0; i<h; i+=12) {
+        const hex = Math.random().toString(16).substring(2, 6).toUpperCase();
+        page.drawText(hex, { x, y: y + i, size: 5, font, color: COLORS.neon, opacity: 0.3 });
+    }
+}
+
+function drawPremiumSeal(page: PDFPage, x: number, y: number, size: number, nick: string, font: any, fontC: any) {
+    const cx = x + size/2;
+    const cy = y + size/2;
+    
+    // Outer Rings
+    page.drawCircle({ x: cx, y: cy, radius: size/2, borderColor: COLORS.neon, borderWidth: 2 });
+    page.drawCircle({ x: cx, y: cy, radius: size/2 - 10, borderColor: COLORS.neon, borderWidth: 0.5 });
+    
+    // Rotating segments look
+    for(let a=0; a<360; a+=30) {
+        const rad = a * Math.PI / 180;
+        page.drawLine({ 
+            start: { x: cx + (size/2 - 20) * Math.cos(rad), y: cy + (size/2 - 20) * Math.sin(rad) },
+            end: { x: cx + (size/2) * Math.cos(rad), y: cy + (size/2) * Math.sin(rad) },
+            thickness: 1, color: COLORS.neon 
+        });
+    }
+
+    page.drawText('DNA_VERIFIED', { x: cx - 40, y: cy + 40, size: 10, font: fontC, color: COLORS.neon });
+    page.drawText(nick.toUpperCase(), { x: cx - 60, y: cy - 10, size: 18, font, color: COLORS.white });
+    page.drawText('OFFICIAL_AUTH', { x: cx - 40, y: cy - 50, size: 8, font: fontC, color: COLORS.neon });
+}
+
+// Reuse Radar, Background, WrappedText from previous but refined if needed
 function drawBackground(page: PDFPage) {
     const { width, height } = page.getSize();
     page.drawRectangle({ x: 0, y: 0, width, height, color: COLORS.bg });
-    // Grids
-    for(let i=0; i<width; i+=50) {
-        page.drawLine({ start: { x: i, y: 0 }, end: { x: i, y: height }, thickness: 0.5, color: COLORS.darkGray });
+    // Subgrid
+    for(let i=0; i<width; i+=25) {
+        page.drawLine({ start: { x: i, y: 0 }, end: { x: i, y: height }, thickness: 0.2, color: COLORS.dim });
     }
-    for(let i=0; i<height; i+=50) {
-        page.drawLine({ start: { x: 0, y: i }, end: { x: width, y: i }, thickness: 0.5, color: COLORS.darkGray });
+    for(let i=0; i<height; i+=25) {
+        page.drawLine({ start: { x: 0, y: i }, end: { x: width, y: i }, thickness: 0.2, color: COLORS.dim });
     }
-}
-
-function drawHeader(page: PDFPage, text: string, font: any) {
-    const { width, height } = page.getSize();
-    page.drawRectangle({ x: 0, y: height - 40, width, height: 40, color: COLORS.black });
-    page.drawText(text, { x: 40, y: height - 25, size: 8, font, color: COLORS.neon });
-}
-
-function drawClassifiedBox(page: PDFPage, x: number, y: number, w: number, h: number, font: any, color: any = COLORS.gray) {
-    page.drawRectangle({ x, y, width: w, height: h, borderColor: color, borderWidth: 1 });
-    page.drawText('CLASSIFIED', { x: x + 5, y: y + h - 10, size: 6, font, color });
-}
-
-function drawSeal(page: PDFPage, x: number, y: number, nick: string, font: any, size: number = 130) {
-    page.drawRectangle({ x, y, width: size, height: size, borderColor: COLORS.neon, borderWidth: 1 });
-    page.drawRectangle({ x: x+5, y: y+5, width: size-10, height: size-10, borderColor: COLORS.neon, borderWidth: 0.5 });
-    page.drawText('PLAYERDNA_VERIFIED', { x: x + 10, y: y + size - 20, size: 8, font, color: COLORS.neon });
-    
-    // QR Simulation
-    for(let i=0; i<5; i++) {
-        for(let j=0; j<5; j++) {
-            if(Math.random() > 0.4) {
-                page.drawRectangle({ x: x + (size/4) + (i*10), y: y + (size/4) + (j*10), width: 8, height: 8, color: COLORS.neon });
-            }
-        }
-    }
-    const nickText = nick.toUpperCase();
-    const nickWidth = font.widthOfTextAtSize(nickText, 10);
-    page.drawText(nickText, { x: x + (size/2) - (nickWidth/2), y: y + 20, size: 10, font, color: COLORS.white });
 }
 
 function drawRadarChart(page: PDFPage, x: number, y: number, size: number, values: number[], labels: string[], color: any, font: any) {
@@ -255,7 +264,6 @@ function drawRadarChart(page: PDFPage, x: number, y: number, size: number, value
     const angleStep = (Math.PI * 2) / numPoints;
     const radius = size / 2;
 
-    // Draw axes & pentagon background
     for(let i=1; i<=4; i++) {
         const r = (radius / 4) * i;
         for(let j=0; j<numPoints; j++) {
@@ -269,52 +277,33 @@ function drawRadarChart(page: PDFPage, x: number, y: number, size: number, value
         }
     }
 
-    // Labels
-    labels.forEach((l, i) => {
-        const a = i * angleStep - Math.PI/2;
-        page.drawText(l, { x: x + (radius + 15) * Math.cos(a) - 20, y: y + (radius + 15) * Math.sin(a), size: 6, font, color: COLORS.lightGray });
-    });
-
-    // Data Shape
-    const points: { x: number, y: number }[] = values.map((v, i) => {
+    const points = values.map((v, i) => {
         const a = i * angleStep - Math.PI/2;
         const r = (v / 100) * radius;
         return { x: x + r * Math.cos(a), y: y + r * Math.sin(a) };
     });
 
     for(let i=0; i<numPoints; i++) {
-        page.drawLine({ 
-            start: points[i], 
-            end: points[(i+1)%numPoints], 
-            thickness: 2, color 
-        });
+        page.drawLine({ start: points[i], end: points[(i+1)%numPoints], thickness: 2, color });
+        // Vertices
+        page.drawCircle({ x: points[i].x, y: points[i].y, radius: 3, color });
     }
 }
 
-function drawNeuralWave(page: PDFPage, x: number, y: number, w: number, h: number, color: any) {
-    let prevPoint = { x, y: y + h/2 };
-    for(let i=0; i<=w; i+=10) {
-        const wave = Math.sin(i * 0.05) * (h/3) + (Math.random() * 10);
-        const nextPoint = { x: x + i, y: y + h/2 + wave };
-        page.drawLine({ start: prevPoint, end: nextPoint, thickness: 1, color });
-        prevPoint = nextPoint;
-    }
-}
-
-function drawWrappedText(page: PDFPage, text: string, x: number, y: number, width: number, size: number, font: any, color: any, options: any = {}) {
+function drawWrappedText(page: PDFPage, text: string, x: number, y: number, width: number, size: number, font: any, color: any) {
     const words = text.split(' ');
     let line = '';
     let currentY = y;
-    const maxChars = width / (size * 0.5);
+    const maxChars = width / (size * 0.55);
 
     words.forEach(word => {
         if ((line + word).length < maxChars) {
             line += word + ' ';
         } else {
-            page.drawText(line.trim(), { x, y: currentY, size, font, color, ...options });
+            page.drawText(line.trim(), { x, y: currentY, size, font, color });
             line = word + ' ';
             currentY -= (size + 5);
         }
     });
-    page.drawText(line.trim(), { x, y: currentY, size, font, color, ...options });
+    page.drawText(line.trim(), { x, y: currentY, size, font, color });
 }
