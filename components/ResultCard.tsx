@@ -6,15 +6,9 @@ import { useRef, useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/context/LanguageContext";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-interface ResultCardProps {
-  archetype: Archetype;
-}
 
 export default function ResultCard({ archetype }: ResultCardProps) {
+
   const { lang, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -40,9 +34,10 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           lang: lang 
         }),
       });
-      const { id } = await response.json();
-      const stripe = await stripePromise;
-      await stripe?.redirectToCheckout({ sessionId: id });
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
     } catch (err) {
       console.error("Stripe error:", err);
       alert("Checkout error. Please try again.");
