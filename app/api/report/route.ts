@@ -196,7 +196,7 @@ function drawHeatmap(page: PDFPage, x: number, y: number, w: number, h: number) 
         const ry = Math.random() * h;
         const rw = Math.random() * 50;
         const rh = Math.random() * 50;
-        page.drawEllipse({ x: x + rx, y: y + ry, xRadius: rw, yRadius: rh, color: COLORS.neon, opacity: 0.05 });
+        page.drawEllipse({ x: x + rx, y: y + ry, xScale: rw, yScale: rh, color: COLORS.neon, opacity: 0.05 });
     }
 }
 
