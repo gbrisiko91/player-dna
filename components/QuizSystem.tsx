@@ -5,6 +5,7 @@ import { QUESTIONS, ARCHETYPES } from "@/lib/data";
 import { calculateDNA } from "@/lib/engine";
 import { ChevronRight, Dna, Loader2 } from "lucide-react";
 import ResultCard from "./ResultCard";
+import { supabase } from "@/lib/supabase";
 
 export default function QuizSystem() {
   const [step, setStep] = useState(0); // 0: Start, 1: Quiz, 2: Loading, 3: Result
@@ -13,6 +14,7 @@ export default function QuizSystem() {
     ego: 50, clutch: 50, toxic: 50, tactics: 50, resilience: 50
   });
   const [result, setResult] = useState<any>(null);
+  const [shareToken, setShareToken] = useState<string | null>(null);
 
   const startQuiz = () => setStep(1);
 
@@ -34,7 +36,6 @@ export default function QuizSystem() {
 
     if (!error) {
       setShareToken(token);
-      // Se l'utente è loggato, aggiorniamo il suo profilo col nuovo archetipo
       if (user) {
         await supabase.from('profiles').upsert({
           id: user.id,
@@ -45,6 +46,25 @@ export default function QuizSystem() {
     }
   };
 
+  const handleAnswer = (weights: any) => {
+    const newScores = { ...scores };
+    Object.keys(weights).forEach((trait) => {
+      newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
+    });
+    setScores(newScores);
+
+    if (currentQuestion < QUESTIONS.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setStep(2);
+      setTimeout(async () => {
+        const dna = calculateDNA(newScores);
+        setResult(dna);
+        await saveResult(dna, newScores);
+        setStep(3);
+      }, 3000);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-dna-black flex items-center justify-center p-4">
