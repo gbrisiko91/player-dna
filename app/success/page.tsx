@@ -17,6 +17,24 @@ function SuccessContent() {
     }
   }, [sessionId]);
 
+  const handleDownload = async () => {
+    if (!sessionId) return;
+    try {
+      const response = await fetch(`/api/report?session_id=${sessionId}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `PlayerDNA_Premium_Report.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Error generating report. Please contact support.");
+    }
+  };
+
   return (
     <div className="relative z-10 w-full max-w-2xl bg-black/60 border border-white/10 p-12 backdrop-blur-xl">
       {status === "loading" ? (
@@ -40,16 +58,15 @@ function SuccessContent() {
             Il tuo **Premium Neural Report** è pronto. Abbiamo analizzato ogni tua risposta per creare il dossier definitivo sulla tua identità competitiva.
           </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-              <button 
-                onClick={handleDownload}
-                className="group relative py-6 bg-white text-black font-esports text-sm tracking-widest uppercase hover:bg-dna-neon transition-all flex items-center justify-center gap-3"
-              >
-                <Download className="w-5 h-5" />
-                Download PDF
-                <div className="absolute -top-2 -right-2 bg-dna-danger text-white text-[8px] px-2 py-1">PREMIUM</div>
-              </button>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+            <button 
+              onClick={handleDownload}
+              className="group relative py-6 bg-white text-black font-esports text-sm tracking-widest uppercase hover:bg-dna-neon transition-all flex items-center justify-center gap-3"
+            >
+              <Download className="w-5 h-5" />
+              Download PDF
+              <div className="absolute -top-2 -right-2 bg-dna-danger text-white text-[8px] px-2 py-1">PREMIUM</div>
+            </button>
             
             <button className="py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase flex items-center justify-center gap-3">
               <Share2 className="w-5 h-5" />
@@ -70,24 +87,6 @@ function SuccessContent() {
 }
 
 export default function SuccessPage() {
-  const handleDownload = async () => {
-    if (!sessionId) return;
-    try {
-      const response = await fetch(`/api/report?session_id=${sessionId}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `PlayerDNA_Premium_Report.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err) {
-      console.error("Download error:", err);
-      alert("Error generating report. Please contact support.");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#030303] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background FX */}
