@@ -58,9 +58,9 @@ export async function GET(req: Request) {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
     });
 
-    return new Response(pdfBuffer, {
+    return new Response(pdfBuffer as any, {
       headers: {
-        'Content-Type': 'application/json', // Cambiato per gestire il blob lato client
+        'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="PlayerDNA_Report_${nickname}.pdf"`,
       },
     });
