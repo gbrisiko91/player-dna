@@ -2,12 +2,20 @@
 import { motion } from "framer-motion";
 import { Archetype } from "@/lib/data";
 import { Share2, Download, Trophy, Target, Zap, Shield, Brain } from "lucide-react";
+import { useRef } from "react";
 
 interface ResultCardProps {
   archetype: Archetype;
 }
 
 export default function ResultCard({ archetype }: ResultCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = async () => {
+    console.log("Capturing card for download...");
+    alert("In produzione, questo pulsante utilizza 'html-to-image' per generare un PNG ad alta risoluzione del tuo DNA.");
+  };
+
   const traits = [
     { label: "EGO", value: archetype.traits.ego, icon: <Trophy className="w-3 h-3" /> },
     { label: "CLUTCH", value: archetype.traits.clutch, icon: <Target className="w-3 h-3" /> },
@@ -18,6 +26,7 @@ export default function ResultCard({ archetype }: ResultCardProps) {
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       className="relative w-full max-w-sm mx-auto bg-dna-dark border border-white/10 rounded-3xl p-8 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)]"
@@ -56,7 +65,6 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           transition={{ duration: 4, repeat: Infinity }}
           className="text-6xl relative z-20 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
         >
-          {/* Mapping emoji or icons to archetypes in a real app */}
           🧬
         </motion.div>
       </div>
@@ -108,25 +116,6 @@ export default function ResultCard({ archetype }: ResultCardProps) {
               onClick={handleDownload}
               className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
             >
-              <Download className="w-4 h-4 text-white" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-">
-          <span className="text-[8px] font-esports text-gray-500 tracking-widest uppercase">Global Rarity</span>
-          <span className="text-sm font-esports text-white italic">{archetype.rarity}%</span>
-        </div>
-        <div className="text-right">
-          <span className="text-[8px] font-esports text-dna-blue tracking-widest uppercase block mb-1">PLAYERDNA.GG</span>
-          <div className="flex gap-2 justify-end">
-            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
-              <Share2 className="w-4 h-4 text-white" />
-            </button>
-            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
               <Download className="w-4 h-4 text-white" />
             </button>
           </div>
