@@ -7,6 +7,10 @@ import { toPng } from "html-to-image";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/context/LanguageContext";
 
+interface ResultCardProps {
+  archetype: Archetype;
+}
+
 export default function ResultCard({ archetype }: ResultCardProps) {
 
   const { lang, t } = useLanguage();
