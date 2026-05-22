@@ -84,9 +84,9 @@ export default function ResultCard({ archetype }: ResultCardProps) {
           </h2>
 
           {/* Central Visual */}
-          <div className="relative flex-1 flex items-center justify-center my-4 min-h-0">
+          <div className="relative flex-1 flex items-center justify-center my-2 min-h-0">
              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
-             <div className="relative w-full aspect-square max-w-[280px] flex items-center justify-center">
+             <div className="relative w-full aspect-square max-w-[220px] flex items-center justify-center">
                 <motion.div 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
