@@ -21,6 +21,17 @@ function SuccessContent() {
     if (!sessionId) return;
     try {
       const response = await fetch(`/api/report?session_id=${sessionId}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Server error');
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType !== 'application/pdf') {
+        throw new Error('Response is not a PDF');
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -29,9 +40,10 @@ function SuccessContent() {
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (err) {
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
       console.error("Download error:", err);
-      alert("Error generating report. Please contact support.");
+      alert(`Errore nella generazione del report: ${err.message}. Contatta l'assistenza.`);
     }
   };
 

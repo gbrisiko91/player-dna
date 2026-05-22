@@ -54,17 +54,22 @@ export async function GET(req: Request) {
 
     doc.end();
 
-    const pdfBuffer = await new Promise<Buffer>((resolve) => {
+    const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
       doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', reject);
     });
 
-    return new Response(pdfBuffer as any, {
+    return new Response(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="PlayerDNA_Report_${nickname}.pdf"`,
+        'Cache-Control': 'no-cache',
       },
     });
   } catch (err: any) {
-    return new Response(err.message, { status: 500 });
+    console.error('PDF Generation Error:', err);
+    return new Response(JSON.stringify({ error: err.message }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
