@@ -73,10 +73,62 @@ export default function ResultCard({ archetype }: ResultCardProps) {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 p-8 pt-24 h-full flex flex-col">
-          <div className="mb-2">
-            <span className="font-esports text-[10px] text-gray-500 tracking-widest uppercase">Identified Archetype:</span>
+        <div className="relative z-10 p-6 pt-20 h-full flex flex-col">
+          <div className="mb-1">
+            <span className="font-esports text-[9px] text-gray-500 tracking-widest uppercase">Identified Archetype:</span>
           </div>
+          <h2 
+            className="text-5xl font-esports italic font-black uppercase tracking-tighter leading-none mb-4"
+            style={{ color: archetype.color, textShadow: `0 0 30px ${archetype.color}66` }}
+          >
+            {archetype.name}
+          </h2>
+
+          {/* Central Visual - Holographic Archetype Illustration */}
+          <div className="relative flex-1 flex items-center justify-center my-4 min-h-0">
+             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dna-neon/5 to-transparent animate-pulse" />
+             <div className="relative w-64 h-64 flex items-center justify-center">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 border border-white/5 border-dashed rounded-full"
+                />
+                <div className="absolute inset-2 overflow-hidden rounded-2xl border border-white/10 bg-black/20 backdrop-blur-sm">
+                   <img 
+                      src={archetype.image} 
+                      alt={archetype.name}
+                      className="w-full h-full object-cover filter brightness-110 contrast-125 mix-blend-screen opacity-100 transition-transform duration-1000" 
+                   />
+                   {/* Overlay Effects */}
+                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                   <div className="absolute inset-0 scanline opacity-20" />
+                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-40" />
+                </div>
+             </div>
+          </div>
+
+
+          {/* Stats */}
+          <div className="space-y-4 mb-8">
+            {traits.map((trait) => (
+              <div key={trait.label}>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="font-esports text-[8px] text-gray-500 tracking-widest uppercase">{trait.label}</span>
+                  <span className={`font-esports text-xs font-bold ${trait.color}`}>{trait.value}%</span>
+                </div>
+                <div className="h-[2px] bg-white/5 w-full relative">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${trait.value}%` }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                    className="absolute inset-y-0 left-0"
+                    style={{ backgroundColor: archetype.color, boxShadow: `0 0 10px ${archetype.color}` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
           <h2 
             className="text-6xl font-esports italic font-black uppercase tracking-tighter leading-none mb-6"
             style={{ color: archetype.color, textShadow: `0 0 30px ${archetype.color}66` }}
