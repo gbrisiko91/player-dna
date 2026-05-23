@@ -66,7 +66,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#030303] flex flex-col items-center justify-center">
       <Loader2 className="w-12 h-12 text-dna-neon animate-spin mb-4" />
       <div className="font-esports text-[10px] tracking-[0.5em] text-dna-neon animate-pulse uppercase">
-        {t.dashboard.loading}
+        {t.dashboard?.loading || 'AUTHENTICATING...'}
       </div>
     </div>
   );
@@ -91,9 +91,9 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto relative z-10">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
           <div>
-            <h1 className="text-dna-neon font-esports text-[10px] tracking-[0.6em] mb-4 uppercase">{t.dashboard.subtitle}</h1>
+            <h1 className="text-dna-neon font-esports text-[10px] tracking-[0.6em] mb-4 uppercase">{t.dashboard?.subtitle || 'USER COMMAND CENTER'}</h1>
             <h2 className="text-5xl md:text-7xl font-esports italic font-black uppercase tracking-tighter leading-none">
-              {t.dashboard.welcome} <br />
+              {t.dashboard?.welcome || 'WELCOME BACK,'} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
                 {user.user_metadata?.full_name || user.email?.split('@')[0] || 'PLAYER'}
               </span>
@@ -102,7 +102,7 @@ export default function Dashboard() {
           <div className="flex gap-4">
             <button className="group relative px-8 py-4 bg-transparent border border-dna-toxic/30 text-dna-toxic font-esports text-[10px] tracking-widest uppercase hover:bg-dna-toxic hover:text-black transition-all duration-300 flex items-center gap-3">
               <Crown className="w-4 h-4" />
-              {t.dashboard.upgrade}
+              {t.dashboard?.upgrade || 'UPGRADE'}
             </button>
           </div>
         </header>
@@ -110,7 +110,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Archetype Card */}
           <div className="lg:col-span-5">
-            <h3 className="font-esports text-[10px] text-gray-500 mb-6 uppercase tracking-[0.4em]">{t.dashboard.currentDna}</h3>
+            <h3 className="font-esports text-[10px] text-gray-500 mb-6 uppercase tracking-[0.4em]">{t.dashboard?.currentDna || 'CURRENT DNA'}</h3>
             {history[0] ? (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -125,10 +125,10 @@ export default function Dashboard() {
               </motion.div>
             ) : (
               <div className="p-16 border border-white/5 bg-white/[0.02] text-center backdrop-blur-sm">
-                <p className="text-gray-500 text-xs mb-8 uppercase font-esports tracking-widest">{t.dashboard.noDna}</p>
+                <p className="text-gray-500 text-xs mb-8 uppercase font-esports tracking-widest">{t.dashboard?.noDna || 'NO DNA DETECTED'}</p>
                 <Link href="/quiz">
                    <button className="px-10 py-4 bg-white text-black font-esports text-[10px] tracking-widest uppercase hover:bg-dna-neon transition-all">
-                      {t.dashboard.startAnalysis}
+                      {t.dashboard?.startAnalysis || 'START ANALYSIS'}
                    </button>
                 </Link>
               </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
             {/* History List */}
             <section>
               <h3 className="font-esports text-[10px] text-gray-500 mb-8 uppercase tracking-[0.4em] flex items-center gap-3">
-                <History className="w-4 h-4 text-dna-neon" /> {t.dashboard.history}
+                <History className="w-4 h-4 text-dna-neon" /> {t.dashboard?.history || 'ANALYSIS HISTORY'}
               </h3>
               <div className="space-y-4">
                 <AnimatePresence>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                             ) : (
                               <Download className="w-4 h-4" />
                             )}
-                            {t.dashboard.downloadReport}
+                            {t.dashboard?.downloadReport || 'DOWNLOAD'}
                           </button>
                         ) : (
                           <Link href={`/results/${item.share_token}`}>
@@ -205,14 +205,14 @@ export default function Dashboard() {
             {/* Badges Section */}
             <section>
               <h3 className="font-esports text-[10px] text-gray-500 mb-8 uppercase tracking-[0.4em] flex items-center gap-3">
-                <Trophy className="w-4 h-4 text-dna-purple" /> {t.dashboard.badges}
+                <Trophy className="w-4 h-4 text-dna-purple" /> {t.dashboard?.badges || 'EARNED BADGES'}
               </h3>
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
                 {[1,2,3,4,5].map(i => (
                   <div 
                     key={i} 
                     className="aspect-square border border-white/5 bg-white/[0.02] flex items-center justify-center filter grayscale opacity-30 hover:opacity-100 transition-all cursor-help relative group" 
-                    title={t.dashboard.lockedBadge}
+                    title={t.dashboard?.lockedBadge || 'Locked Badge'}
                   >
                     <span className="text-xl">🔒</span>
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 px-3 py-1 text-[8px] font-esports text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">

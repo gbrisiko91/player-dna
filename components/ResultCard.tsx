@@ -144,12 +144,14 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
     }
   };
 
+  const safeTraits = archetype?.traits || { ego: 0, clutch: 0, toxic: 0, tactics: 0, resilience: 0 };
+
   const traits = [
-    { label: "EGO", value: archetype.traits.ego, color: "text-white" },
-    { label: "CLUTCH", value: archetype.traits.clutch, color: "text-dna-neon" },
-    { label: "TOXICITY", value: archetype.traits.toxic, color: "text-dna-danger" },
-    { label: "TACTICS", value: archetype.traits.tactics, color: "text-dna-purple" },
-    { label: "RESILIENCE", value: archetype.traits.resilience, color: "text-dna-toxic" },
+    { label: "EGO", value: safeTraits.ego || 0, color: "text-white" },
+    { label: "CLUTCH", value: safeTraits.clutch || 0, color: "text-dna-neon" },
+    { label: "TOXICITY", value: safeTraits.toxic || 0, color: "text-dna-danger" },
+    { label: "TACTICS", value: safeTraits.tactics || 0, color: "text-dna-purple" },
+    { label: "RESILIENCE", value: safeTraits.resilience || 0, color: "text-dna-toxic" },
   ];
 
   return (

@@ -11,7 +11,7 @@ export default function ResultClient({ data, token }: { data: any, token: string
   const archetype = ARCHETYPES.find(a => a.slug === data.archetype_slug);
   if (!archetype) return null;
 
-  const resultWithScores = { ...archetype, traits: data.scores };
+  const resultWithScores = { ...archetype, traits: data.scores || archetype.traits };
 
   return (
     <div className="min-h-screen bg-[#030303] py-20 px-4 flex items-center justify-center">
