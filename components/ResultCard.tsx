@@ -36,7 +36,11 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
     });
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) return (
+    <div className="w-full max-w-[380px] aspect-[9/16] bg-black border border-white/10 flex items-center justify-center">
+       <Loader2 className="w-8 h-8 text-dna-neon animate-spin" />
+    </div>
+  );
 
   if (!archetype) return <div className="p-8 border border-white/10 text-gray-500 font-esports text-[10px] uppercase">Neural Data Corrupted</div>;
 
