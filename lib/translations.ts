@@ -4,7 +4,7 @@ export const translations = {
   en: {
     nav: {
       scan: "Init_Scan",
-      login: "Auth_Login",
+      login: "LOGIN",
       logout: "Logout",
     },
     hero: {
@@ -68,7 +68,7 @@ export const translations = {
   it: {
     nav: {
       scan: "Inizia_Scansione",
-      login: "Accedi_Auth",
+      login: "LOGIN",
       logout: "Esci",
     },
     hero: {
