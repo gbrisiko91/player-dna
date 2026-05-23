@@ -2,16 +2,24 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Download, Loader2, Share2, ShieldCheck } from "lucide-react";
+import { Download, Loader2, Share2, ShieldCheck, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { useLanguage } from "@/context/LanguageContext";
+import { supabase } from "@/lib/supabase";
 
 function SuccessContent() {
   const { t } = useLanguage();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
 
   useEffect(() => {
     if (sessionId) {
@@ -96,6 +104,29 @@ function SuccessContent() {
               {t.success.share}
             </button>
           </div>
+
+          {user ? (
+            <div className="mb-12 p-6 border border-dna-purple/30 bg-dna-purple/5 flex flex-col md:flex-row items-center justify-between gap-6">
+               <div className="text-left">
+                  <h4 className="font-esports text-xs text-dna-purple tracking-widest mb-1 uppercase">COMMUNITY SYNC</h4>
+                  <p className="text-gray-400 text-sm">Sync your archetype role on the official Discord server.</p>
+               </div>
+               <Link href="/dashboard" className="px-6 py-3 bg-dna-purple text-white font-esports text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-all flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  GO TO DASHBOARD
+               </Link>
+            </div>
+          ) : (
+            <div className="mb-12 p-6 border border-white/5 bg-white/[0.02] flex flex-col md:flex-row items-center justify-between gap-6">
+               <div className="text-left">
+                  <h4 className="font-esports text-xs text-gray-500 tracking-widest mb-1 uppercase">SAVE PROGRESS</h4>
+                  <p className="text-gray-400 text-sm">Login to save this result to your permanent DNA history.</p>
+               </div>
+               <Link href="/" className="px-6 py-3 border border-white/20 text-white font-esports text-[10px] tracking-widest uppercase hover:bg-white hover:text-black transition-all">
+                  LOGIN NOW
+               </Link>
+            </div>
+          )}
 
           <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
             <p className="text-[10px] font-esports text-gray-600 tracking-[0.3em] uppercase">{t.success.security}</p>

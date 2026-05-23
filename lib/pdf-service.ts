@@ -195,37 +195,66 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
 
     const resend = getResend();
     const isIt = lang === 'it';
+    const archetype = ARCHETYPES.find(a => a.id === (session.metadata as any).archetype_id) || ARCHETYPES.find(a => a.slug === (session.metadata as any).archetype_id) || ARCHETYPES[0];
+    const themeColor = archetype?.color || '#00f2ff';
 
-    const subject = isIt ? `Il tuo Neural Dossier è pronto, ${nickname}` : `Your Neural Dossier is ready, ${nickname}`;
+    const subject = isIt ? `IL TUO DOSSIER NEURALE: ${nickname.toUpperCase()}` : `YOUR NEURAL DOSSIER: ${nickname.toUpperCase()}`;
     
-    const html = isIt ? `
-      <div style="background-color: #030303; color: #ffffff; font-family: sans-serif; padding: 40px; border: 1px solid #00f2ff;">
-        <h1 style="color: #00f2ff; text-transform: uppercase; font-style: italic;">Accesso Autorizzato</h1>
-        <p>Soggetto: <strong>${nickname}</strong></p>
-        <p>Il tuo Premium Neural Report è stato generato con successo. Abbiamo allegato il dossier completo a questa comunicazione.</p>
-        <div style="margin: 30px 0; padding: 20px; border-left: 4px solid #00f2ff; background: #0a0a0a;">
-          <p style="margin: 0; font-size: 12px; color: #888;">Protocollo: DNA-SECURE-v4</p>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #888;">Stato: CRIPTATO / ALLEGATO</p>
-        </div>
-        <p>Analizza i tuoi tratti, domina la lobby.</p>
-        <p style="font-size: 10px; color: #444; margin-top: 50px;">PlayerDNA.gg // Neural Identity Lab</p>
-      </div>
-    ` : `
-      <div style="background-color: #030303; color: #ffffff; font-family: sans-serif; padding: 40px; border: 1px solid #00f2ff;">
-        <h1 style="color: #00f2ff; text-transform: uppercase; font-style: italic;">Access Authorized</h1>
-        <p>Subject: <strong>${nickname}</strong></p>
-        <p>Your Premium Neural Report has been successfully generated. We have attached the full dossier to this communication.</p>
-        <div style="margin: 30px 0; padding: 20px; border-left: 4px solid #00f2ff; background: #0a0a0a;">
-          <p style="margin: 0; font-size: 12px; color: #888;">Protocol: DNA-SECURE-v4</p>
-          <p style="margin: 5px 0 0 0; font-size: 12px; color: #888;">Status: ENCRYPTED / ATTACHED</p>
-        </div>
-        <p>Analyze your traits, dominate the lobby.</p>
-        <p style="font-size: 10px; color: #444; margin-top: 50px;">PlayerDNA.gg // Neural Identity Lab</p>
-      </div>
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { background-color: #030303; color: #ffffff; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid ${themeColor}33; background-color: #030303; }
+            .header { border-bottom: 1px solid ${themeColor}55; padding-bottom: 20px; margin-bottom: 30px; }
+            .title { color: ${themeColor}; text-transform: uppercase; font-weight: bold; letter-spacing: 2px; font-size: 24px; margin: 0; }
+            .subject-info { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+            .nickname { font-size: 18px; color: #fff; font-weight: bold; margin: 0; }
+            .content { line-height: 1.6; font-size: 14px; color: #ccc; }
+            .highlight { color: ${themeColor}; font-weight: bold; }
+            .box { margin: 30px 0; padding: 20px; border-left: 4px solid ${themeColor}; background-color: #111; }
+            .protocol { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
+            .status { margin: 5px 0 0 0; font-size: 11px; color: ${themeColor}; font-weight: bold; text-transform: uppercase; }
+            .footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid #222; font-size: 10px; color: #444; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="subject-info">${isIt ? 'SOGGETTO RILEVATO' : 'SUBJECT DETECTED'}</div>
+              <p class="nickname">${nickname}</p>
+            </div>
+            <div class="content">
+              <h1 class="title">${isIt ? 'ACCESSO AUTORIZZATO' : 'ACCESS AUTHORIZED'}</h1>
+              <p>
+                ${isIt 
+                  ? `Il tuo <span class="highlight">Premium Neural Report</span> è stato generato. Abbiamo analizzato le tue sinapsi per decodificare il tuo DNA competitivo.` 
+                  : `Your <span class="highlight">Premium Neural Report</span> has been generated. We have analyzed your synapses to decode your competitive DNA.`
+                }
+              </p>
+              <div class="box">
+                <p class="protocol">PROTOCOL: DNA-SECURE-V4</p>
+                <p class="status">${isIt ? 'STATO: CRIPTATO / ALLEGATO' : 'STATUS: ENCRYPTED / ATTACHED'}</p>
+              </div>
+              <p>
+                ${isIt 
+                  ? `Il dossier allegato contiene l'analisi completa del tuo archetipo <span class="highlight">${archetype.name}</span>.` 
+                  : `The attached dossier contains the full analysis of your archetype: <span class="highlight">${archetype.name}</span>.`
+                }
+              </p>
+              <p>${isIt ? 'Analizza i tuoi tratti. Domina la lobby.' : 'Analyze your traits. Dominate the lobby.'}</p>
+            </div>
+            <div class="footer">
+              PlayerDNA.gg // Neural Identity Lab // 2026
+            </div>
+          </div>
+        </body>
+      </html>
     `;
 
     await resend.emails.send({
-      from: 'PlayerDNA <onboarding@resend.dev>',
+      from: 'PlayerDNA <reports@player-dna.vercel.app>',
       to: email,
       subject: subject,
       html: html,
