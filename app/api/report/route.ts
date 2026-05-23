@@ -32,6 +32,16 @@ export async function GET(req: Request) {
     const { archetype_id, lang, nickname } = session.metadata as any;
     const archetype = ARCHETYPES.find(a => a.id === archetype_id) || ARCHETYPES[0];
     const isIt = lang === 'it';
+
+    // Conversione colore esadecimale dell'archetipo in RGB per pdf-lib
+    const hexToRgb = (hex: string) => {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      return rgb(r, g, b);
+    };
+
+    const themeColor = archetype.color ? hexToRgb(archetype.color) : COLORS.neon;
     
     const pdfDoc = await PDFDocument.create();
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -41,22 +51,22 @@ export async function GET(req: Request) {
     // --- PAGE 1: DOSSIER IDENTITY & NEURAL CORE ---
     const page1 = pdfDoc.addPage([595.28, 841.89]);
     drawBaseLayer(page1);
-    drawHUD(page1, fontMono, "DOSS_01/02");
+    drawHUD(page1, fontMono, "DOSS_01/02", themeColor);
 
     // Header
-    page1.drawText(isIt ? 'DOSSIER IDENTITÀ NEURALE' : 'NEURAL IDENTITY DOSSIER', { x: 50, y: 780, size: 10, font: fontMono, color: COLORS.neon });
+    page1.drawText(isIt ? 'DOSSIER IDENTITÀ NEURALE' : 'NEURAL IDENTITY DOSSIER', { x: 50, y: 780, size: 10, font: fontMono, color: themeColor });
     page1.drawText('CONFIDENTIAL', { x: 450, y: 780, size: 10, font: fontMono, color: COLORS.danger });
 
     // Subject
-    page1.drawText(isIt ? 'SOGGETTO:' : 'SUBJECT:', { x: 50, y: 745, size: 12, font: fontMono, color: COLORS.neon });
+    page1.drawText(isIt ? 'SOGGETTO:' : 'SUBJECT:', { x: 50, y: 745, size: 12, font: fontMono, color: themeColor });
     page1.drawText(nickname.toUpperCase(), { x: 50, y: 700, size: 48, font: fontBold, color: COLORS.white });
     
     const arcName = archetype.name.toUpperCase();
-    page1.drawText(isIt ? 'DESIGNAZIONE:' : 'DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: COLORS.neon });
-    page1.drawText(arcName, { x: 50, y: 630, size: 32, font: fontBold, color: COLORS.accent });
+    page1.drawText(isIt ? 'DESIGNAZIONE:' : 'DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: themeColor });
+    page1.drawText(arcName, { x: 50, y: 630, size: 32, font: fontBold, color: themeColor });
 
     // Archetype Description
-    drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "CORE ANALYSIS" : "CORE ANALYSIS");
+    drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "CORE ANALYSIS" : "CORE ANALYSIS", themeColor);
     const fullAnalysis = isIt 
         ? `${archetype.description_it}\n\n${archetype.motivation_it}\n\nImpatto Neurale: Il soggetto mostra una predisposizione unica per ${archetype.name_it.toLowerCase()}, con pattern sinaptici che favoriscono l'esecuzione sotto stress e la dominanza spaziale.`
         : `${archetype.description}\n\n${archetype.motivation}\n\nNeural Impact: The subject demonstrates a unique predisposition for ${archetype.name.toLowerCase()} gameplay, with synaptic patterns favoring execution under stress and spatial dominance.`;
@@ -64,32 +74,32 @@ export async function GET(req: Request) {
     drawWrappedText(page1, fullAnalysis, 70, 575, 455, 11, fontRegular, COLORS.white);
 
     // Radar Matrix
-    page1.drawText(isIt ? 'MATRICE PSICOMETRICA:' : 'PSYCHOMETRIC MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: COLORS.neon });
+    page1.drawText(isIt ? 'MATRICE PSICOMETRICA:' : 'PSYCHOMETRIC MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: themeColor });
     const traitValues = [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience];
     const traitLabels = ['EGO', 'CLUTCH', 'TOXIC', 'TACTICS', 'RESIL'];
-    drawRadarChart(page1, 200, 215, 190, traitValues, traitLabels, COLORS.neon, fontBold, fontMono);
+    drawRadarChart(page1, 200, 215, 190, traitValues, traitLabels, themeColor, fontBold, fontMono);
 
     // Stats side list
     let tY = 320;
     traitLabels.forEach((l, i) => {
         page1.drawText(`${l}: ${traitValues[i]}%`, { x: 410, y: tY, size: 11, font: fontMono, color: COLORS.white });
         page1.drawRectangle({ x: 410, y: tY - 10, width: 100, height: 4, color: COLORS.gray });
-        page1.drawRectangle({ x: 410, y: tY - 10, width: traitValues[i], height: 4, color: COLORS.neon });
+        page1.drawRectangle({ x: 410, y: tY - 10, width: traitValues[i], height: 4, color: themeColor });
         tY -= 40;
     });
 
     // --- PAGE 2: RANKING, OPTIMIZATION & SEAL ---
     const page2 = pdfDoc.addPage([595.28, 841.89]);
     drawBaseLayer(page2);
-    drawHUD(page2, fontMono, "DOSS_02/02");
+    drawHUD(page2, fontMono, "DOSS_02/02", themeColor);
 
     // Global Stats
     page2.drawText(isIt ? 'POSIZIONAMENTO GLOBALE' : 'GLOBAL POPULATION RANKING', { x: 50, y: 780, size: 12, font: fontBold, color: COLORS.white });
-    page2.drawText(`TOP ${archetype.rarity}%`, { x: 50, y: 710, size: 85, font: fontBold, color: COLORS.neon });
+    page2.drawText(`TOP ${archetype.rarity}%`, { x: 50, y: 710, size: 85, font: fontBold, color: themeColor });
     page2.drawText(isIt ? 'PERCENTUALE DI RARITÀ RILEVATA' : 'RARITY PERCENTILE DETECTED', { x: 55, y: 690, size: 10, font: fontMono, color: COLORS.white });
 
     // Optimization
-    drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "OPTIMIZATION VECTORS" : "OPTIMIZATION VECTORS");
+    drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "OPTIMIZATION VECTORS" : "OPTIMIZATION VECTORS", themeColor);
     const recommendation = isIt 
         ? "• Sfrutta la tua dominanza naturale per dettare il ritmo del match.\n• Identifica i trigger emotivi che precedono la desincronizzazione cognitiva.\n• Ottimizza i tempi di recupero post-match per prevenire il 'neural burnout'.\n• Coordina i compagni di squadra utilizzando la tua specifica impronta tattica."
         : "• Leverage your natural dominance to dictate the match tempo.\n• Identify emotional triggers that precede cognitive desynchronization.\n• Optimize post-match recovery times to prevent 'neural burnout'.\n• Coordinate teammates using your specific tactical footprint.";
@@ -97,7 +107,7 @@ export async function GET(req: Request) {
 
     // Verification Seal & Certificate
     const certId = `DNA-CERT-${sessionId.substring(sessionId.length - 8).toUpperCase()}`;
-    drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono, certId);
+    drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono, certId, themeColor);
     
     page2.drawText(isIt ? 'CERTIFICATO UFFICIALE DI IDENTITÀ NEURALE' : 'OFFICIAL NEURAL IDENTITY CERTIFICATE', {
         x: 297 - 120,
@@ -121,16 +131,16 @@ export async function GET(req: Request) {
   }
 }
 
-function drawComplexSeal(page: PDFPage, cx: number, cy: number, r: number, nickname: string, fontB: any, fontM: any, certId: string) {
+function drawComplexSeal(page: PDFPage, cx: number, cy: number, r: number, nickname: string, fontB: any, fontM: any, certId: string, themeColor: any = COLORS.neon) {
     const nText = nickname.toUpperCase();
     const nw = fontB.widthOfTextAtSize(nText, 22);
     
-    page.drawCircle({ x: cx, y: cy, size: r/2, color: COLORS.dim, borderColor: COLORS.neon, borderWidth: 2 });
+    page.drawCircle({ x: cx, y: cy, size: r/2, color: COLORS.dim, borderColor: themeColor, borderWidth: 2 });
     page.drawCircle({ x: cx, y: cy, size: r/2 - 10, borderColor: COLORS.white, borderWidth: 0.5, opacity: 0.3 });
     
     page.drawText(nText, { x: cx - nw/2, y: cy - 8, size: 22, font: fontB, color: COLORS.white });
-    page.drawText("VERIFIED PLAYER", { x: cx - 35, y: cy + 50, size: 8, font: fontM, color: COLORS.neon });
-    page.drawText(certId, { x: cx - 45, y: cy - 60, size: 8, font: fontM, color: COLORS.neon });
+    page.drawText("VERIFIED PLAYER", { x: cx - 35, y: cy + 50, size: 8, font: fontM, color: themeColor });
+    page.drawText(certId, { x: cx - 45, y: cy - 60, size: 8, font: fontM, color: themeColor });
 }
 
 function drawBaseLayer(page: PDFPage) {
@@ -143,11 +153,10 @@ function drawBaseLayer(page: PDFPage) {
     }
 }
 
-function drawHUD(page: PDFPage, font: any, id: string) {
+function drawHUD(page: PDFPage, font: any, id: string, color: any = COLORS.neon) {
     const { width, height } = page.getSize();
     const m = 40;
     const l = 30;
-    const color = COLORS.neon;
     page.drawLine({ start: { x: m, y: m }, end: { x: m+l, y: m }, thickness: 1.5, color });
     page.drawLine({ start: { x: m, y: m }, end: { x: m, y: m+l }, thickness: 1.5, color });
     page.drawLine({ start: { x: width-m, y: m }, end: { x: width-m-l, y: m }, thickness: 1.5, color });
