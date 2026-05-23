@@ -107,9 +107,7 @@ export default function Navbar() {
                       onClick={() => handleLogin('discord')}
                       className="flex items-center gap-3 w-full px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white text-[10px] font-esports transition-colors rounded-sm"
                     >
-                      <div className="w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                        <img src="https://assets-global.website-files.com/6257adef93867e3d8405e670/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" className="w-3 h-3" alt="D" />
-                      </div>
+                      <img src="https://assets-global.website-files.com/6257adef93867e3d8405e670/636e0a6a49cf127bf92de1e2_icon_clyde_white_RGB.png" className="w-5 h-5" alt="Discord" />
                       DISCORD
                     </button>
                     <button 

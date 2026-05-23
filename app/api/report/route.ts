@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
 import { ARCHETYPES } from '@/lib/data';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10' as any,
 });
 
@@ -25,6 +25,7 @@ export async function GET(req: Request) {
   if (!sessionId) return new Response(JSON.stringify({ error: 'Missing session' }), { status: 400 });
 
   try {
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status !== 'paid') return new Response(JSON.stringify({ error: 'Not paid' }), { status: 403 });
 
@@ -50,17 +51,20 @@ export async function GET(req: Request) {
     page1.drawText(isIt ? 'SOGGETTO:' : 'SUBJECT:', { x: 50, y: 745, size: 12, font: fontMono, color: COLORS.neon });
     page1.drawText(nickname.toUpperCase(), { x: 50, y: 700, size: 48, font: fontBold, color: COLORS.white });
     
-    const arcName = isIt ? archetype.name_it.toUpperCase() : archetype.name.toUpperCase();
+    const arcName = archetype.name.toUpperCase();
     page1.drawText(isIt ? 'DESIGNAZIONE:' : 'DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: COLORS.neon });
     page1.drawText(arcName, { x: 50, y: 630, size: 32, font: fontBold, color: COLORS.accent });
 
     // Archetype Description
-    drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "ANALISI_CORE" : "CORE_ANALYSIS");
-    const motivation = isIt ? archetype.motivation_it : archetype.motivation;
-    drawWrappedText(page1, motivation, 70, 565, 455, 12, fontRegular, COLORS.white);
+    drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "CORE ANALYSIS" : "CORE ANALYSIS");
+    const fullAnalysis = isIt 
+        ? `${archetype.description_it}\n\n${archetype.motivation_it}\n\nImpatto Neurale: Il soggetto mostra una predisposizione unica per ${archetype.name_it.toLowerCase()}, con pattern sinaptici che favoriscono l'esecuzione sotto stress e la dominanza spaziale.`
+        : `${archetype.description}\n\n${archetype.motivation}\n\nNeural Impact: The subject demonstrates a unique predisposition for ${archetype.name.toLowerCase()} gameplay, with synaptic patterns favoring execution under stress and spatial dominance.`;
+    
+    drawWrappedText(page1, fullAnalysis, 70, 575, 455, 11, fontRegular, COLORS.white);
 
     // Radar Matrix
-    page1.drawText(isIt ? 'MATRICE_PSICOMETRICA:' : 'PSYCHOMETRIC_MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: COLORS.neon });
+    page1.drawText(isIt ? 'MATRICE PSICOMETRICA:' : 'PSYCHOMETRIC MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: COLORS.neon });
     const traitValues = [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience];
     const traitLabels = ['EGO', 'CLUTCH', 'TOXIC', 'TACTICS', 'RESIL'];
     drawRadarChart(page1, 200, 215, 190, traitValues, traitLabels, COLORS.neon, fontBold, fontMono);
@@ -81,15 +85,15 @@ export async function GET(req: Request) {
 
     // Global Stats
     page2.drawText(isIt ? 'POSIZIONAMENTO GLOBALE' : 'GLOBAL POPULATION RANKING', { x: 50, y: 780, size: 12, font: fontBold, color: COLORS.white });
-    page2.drawText('TOP 2.7%', { x: 50, y: 710, size: 85, font: fontBold, color: COLORS.neon });
+    page2.drawText(`TOP ${archetype.rarity}%`, { x: 50, y: 710, size: 85, font: fontBold, color: COLORS.neon });
     page2.drawText(isIt ? 'PERCENTUALE DI RARITÀ RILEVATA' : 'RARITY PERCENTILE DETECTED', { x: 55, y: 690, size: 10, font: fontMono, color: COLORS.white });
 
     // Optimization
-    drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "VETTORI_DI_OTTIMIZZAZIONE" : "OPTIMIZATION_VECTORS");
+    drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "OPTIMIZATION VECTORS" : "OPTIMIZATION VECTORS");
     const recommendation = isIt 
-        ? "1. Forza scenari di fine partita per sfruttare l'alto indice CLUTCH.\n2. Usa la dominanza EGO per guidare la comunicazione del team.\n3. Riduci lo stress biologico nei primi round per mantenere performance meccaniche di picco."
-        : "1. Force late-game scenarios to exploit high CLUTCH index.\n2. Utilize EGO dominance to lead team communication.\n3. Minimize early-round biological stress to sustain peak mechanical performance.";
-    drawWrappedText(page2, recommendation, 70, 605, 455, 12, fontRegular, COLORS.white);
+        ? "• Sfrutta la tua dominanza naturale per dettare il ritmo del match.\n• Identifica i trigger emotivi che precedono la desincronizzazione cognitiva.\n• Ottimizza i tempi di recupero post-match per prevenire il 'neural burnout'.\n• Coordina i compagni di squadra utilizzando la tua specifica impronta tattica."
+        : "• Leverage your natural dominance to dictate the match tempo.\n• Identify emotional triggers that precede cognitive desynchronization.\n• Optimize post-match recovery times to prevent 'neural burnout'.\n• Coordinate teammates using your specific tactical footprint.";
+    drawWrappedText(page2, recommendation, 70, 610, 455, 11, fontRegular, COLORS.white);
 
     // Verification Seal
     drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono);
@@ -154,8 +158,8 @@ function drawComplexSeal(page: PDFPage, cx: number, cy: number, size: number, ni
     const nText = nick.toUpperCase();
     const nw = fontB.widthOfTextAtSize(nText, 22);
     page.drawText(nText, { x: cx - nw/2, y: cy - 8, size: 22, font: fontB, color: COLORS.white });
-    page.drawText("VERIFIED_PLAYER", { x: cx - 40, y: cy + 50, size: 8, font: fontM, color: COLORS.neon });
-    page.drawText("DNA_ORIGIN_ID", { x: cx - 35, y: cy - 60, size: 8, font: fontM, color: COLORS.neon });
+    page.drawText("VERIFIED PLAYER", { x: cx - 35, y: cy + 50, size: 8, font: fontM, color: COLORS.neon });
+    page.drawText("DNA ORIGIN ID", { x: cx - 30, y: cy - 60, size: 8, font: fontM, color: COLORS.neon });
 }
 
 function drawRadarChart(page: PDFPage, x: number, y: number, size: number, values: number[], labels: string[], color: any, fontB: any, fontMono: any) {
@@ -184,17 +188,31 @@ function drawRadarChart(page: PDFPage, x: number, y: number, size: number, value
 }
 
 function drawWrappedText(page: PDFPage, text: string, x: number, y: number, width: number, size: number, font: any, color: any) {
-    const words = text.split(' ');
-    let line = '';
+    const paragraphs = text.split('\n');
     let currY = y;
-    const max = width / (size * 0.55);
-    words.forEach(w => {
-        if((line + w).length < max) line += w + ' ';
-        else {
-            page.drawText(line.trim(), { x, y: currY, size, font, color });
-            line = w + ' ';
-            currY -= (size + 6);
+    const lineHeight = size + 6;
+    const maxCharsPerLine = width / (size * 0.55);
+
+    paragraphs.forEach(paragraph => {
+        if (paragraph.trim() === '') {
+            currY -= lineHeight / 2;
+            return;
         }
+
+        const words = paragraph.split(' ');
+        let line = '';
+        
+        words.forEach(w => {
+            if ((line + w).length < maxCharsPerLine) {
+                line += w + ' ';
+            } else {
+                page.drawText(line.trim(), { x, y: currY, size, font, color });
+                line = w + ' ';
+                currY -= lineHeight;
+            }
+        });
+        
+        page.drawText(line.trim(), { x, y: currY, size, font, color });
+        currY -= lineHeight;
     });
-    page.drawText(line.trim(), { x, y: currY, size, font, color });
 }

@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-04-10' as any,
 });
 
 export async function POST(req: Request) {
   try {
+    const stripe = getStripe();
     const { archetype, archetype_id, lang, nickname } = await req.json();
 
     const session = await stripe.checkout.sessions.create({

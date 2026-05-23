@@ -3,12 +3,12 @@ export type Language = "en" | "it";
 export const translations = {
   en: {
     nav: {
-      scan: "Init_Scan",
+      scan: "INIT SCAN",
       login: "LOGIN",
       logout: "Logout",
     },
     hero: {
-      protocol: "Protocol: Identity_Scan_v4",
+      protocol: "Protocol: Identity Scan v4",
       discover: "DISCOVER YOUR",
       playerdna: "PLAYER DNA",
       quote: '"Rank is a number. DNA is a sentence."',
@@ -22,17 +22,17 @@ export const translations = {
       calibrating: "CALIBRATING",
     },
     worldData: {
-      title: "WORLD_",
+      title: "WORLD",
       subtitle: "Real-time global network synchronization",
       distribution: "GLOBAL DISTRIBUTION",
-      networkSize: "Network size: {size} scanned_devs",
-      leaderboard: "ELITE_LEADERBOARD",
-      loading: "LOADING_GLOBAL_DATA...",
+      networkSize: "Network size: {size} scanned devs",
+      leaderboard: "ELITE LEADERBOARD",
+      loading: "LOADING GLOBAL DATA...",
     },
     quiz: {
       sequence: "Sequence",
       scanning: "Scanning Synapses...",
-      decoding: "DECODING_PSYCHE",
+      decoding: "DECODING PSYCHE",
       agg: "Aggregating behavioral datasets...",
       norm: "Normalizing toxicity coefficients...",
       anomaly: "Anomaly detected in Ego Index: Proceeding anyway.",
@@ -42,19 +42,18 @@ export const translations = {
       copied: "LINK COPIED: SHARE YOUR TRUTH.",
     },
     result: {
-      neuralSuccess: "NEURAL_SCAN_SUCCESS",
-      subject: "Subject Profile:",
-      frequency: "Frequency",
-      download: "Download DNA Card",
-      premium: "UNLOCK PREMIUM REPORT (€4.99)",
-      sync: "Sync Discord Role",
-      synced: "✓ Role Synced",
-      processing: "Processing...",
-      loginFirst: "Please login with Discord first!",
-      motivation: "SCAN ANALYSIS:",
+      subject: "Profilo soggetto:",
+      frequency: "Frequenza",
+      motivation: "Analisi Scansione:",
+      premium: "Ottieni Premium Report",
+      download: "Scarica Card",
+      sync: "Sincronizza Discord",
+      synced: "Sincronizzato su Discord",
+      processing: "Elaborazione...",
+      neuralSuccess: "SCANSIONE NEURALE RIUSCITA",
     },
     social: {
-      title: "NEURAL_FEEDBACK",
+      title: "NEURAL FEEDBACK",
       subtitle: "Verified Subject Testimonials",
     },
     cta: {
@@ -67,12 +66,12 @@ export const translations = {
   },
   it: {
     nav: {
-      scan: "Inizia_Scansione",
+      scan: "INIZIA SCANSIONE",
       login: "LOGIN",
       logout: "Esci",
     },
     hero: {
-      protocol: "Protocollo: Mappa_Identità_v4",
+      protocol: "Protocollo: Mappa Identità v4",
       discover: "SCOPRI IL TUO",
       playerdna: "PLAYER DNA",
       quote: '"Il Rank è un numero. Il DNA è una sentenza."',
@@ -86,17 +85,17 @@ export const translations = {
       calibrating: "CALIBRAZIONE",
     },
     worldData: {
-      title: "DATI_",
+      title: "DATI",
       subtitle: "Sincronizzazione globale in tempo reale",
       distribution: "DISTRIBUZIONE GLOBALE",
       networkSize: "Rete: {size} player scansionati",
-      leaderboard: "CLASSIFICA_ELITE",
-      loading: "CARICAMENTO_DATI...",
+      leaderboard: "CLASSIFICA ELITE",
+      loading: "CARICAMENTO DATI...",
     },
     quiz: {
       sequence: "Sequenza",
       scanning: "Scansione Sinapsi...",
-      decoding: "DECODIFICA_PSICHE",
+      decoding: "DECODIFICA PSICHE",
       agg: "Aggregando set di dati comportamentali...",
       norm: "Normalizzazione coefficienti tossicità...",
       anomaly: "Anomalia rilevata nell'Ego Index: Procedo comunque.",
@@ -106,7 +105,7 @@ export const translations = {
       copied: "LINK COPIATO: CONDIVIDI LA TUA VERITÀ.",
     },
     result: {
-      neuralSuccess: "SCANSIONE_NEURALE_RIUSCITA",
+      neuralSuccess: "SCANSIONE NEURALE RIUSCITA",
       subject: "Profilo Soggetto:",
       frequency: "Frequenza",
       download: "Scarica Card DNA",
@@ -118,7 +117,7 @@ export const translations = {
       motivation: "ANALISI SCANSIONE:",
     },
     social: {
-      title: "FEEDBACK_NEURALE",
+      title: "FEEDBACK NEURALE",
       subtitle: "Testimonianze Soggetti Verificati",
     },
     cta: {

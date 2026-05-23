@@ -164,9 +164,9 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
                 <BrainCircuit className="w-3 h-3" />
                 <span className="font-esports text-[8px] tracking-widest uppercase">{t.result.motivation}</span>
              </div>
-             <p className="text-[10px] leading-relaxed text-gray-300 italic">
+              <p className="text-[12px] leading-relaxed text-gray-300 italic">
                 {lang === 'it' ? archetype.motivation_it : archetype.motivation}
-             </p>
+              </p>
           </div>
 
           {/* Image Container */}
@@ -213,7 +213,7 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
               <span className="font-esports text-xl text-white italic leading-none">{archetype.rarity}%</span>
             </div>
             <div className="text-right">
-              <span className="block font-esports text-[9px] text-dna-neon font-black italic tracking-widest">PLAYERDNA.GG</span>
+              {/* Removed branding per user request */}
             </div>
           </div>
 
