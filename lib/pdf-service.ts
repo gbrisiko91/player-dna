@@ -229,8 +229,8 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
               <h1 class="title">${isIt ? 'ACCESSO AUTORIZZATO' : 'ACCESS AUTHORIZED'}</h1>
               <p>
                 ${isIt 
-                  ? `Complimenti, Operatore. La tua transazione è stata confermata e il tuo <span class="highlight">Premium Neural Report</span> è ora sbloccato. Sei tra i pochi ad avere accesso a questa profondità di analisi.` 
-                  : `Congratulations, Operator. Your transaction has been confirmed and your <span class="highlight">Premium Neural Report</span> is now unlocked. You are among the few with access to this depth of analysis.`
+                  ? `Complimenti, <span class="highlight">${nickname}</span>. La tua transazione è stata confermata e il tuo <span class="highlight">Premium Neural Report</span> è ora sbloccato.` 
+                  : `Congratulations, <span class="highlight">${nickname}</span>. Your transaction has been confirmed and your <span class="highlight">Premium Neural Report</span> is now unlocked.`
                 }
               </p>
               <div class="box">
