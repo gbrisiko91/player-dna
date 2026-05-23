@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { Archetype } from "@/lib/data";
-import { Download, Loader2, Send, BrainCircuit, Crown } from "lucide-react";
+import { Download, Loader2, Send, BrainCircuit, Crown, ShieldCheck } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { toPng } from "html-to-image";
 import { supabase } from "@/lib/supabase";
