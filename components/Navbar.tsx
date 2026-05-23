@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dna, LogIn, LogOut, Globe, Mail } from "lucide-react";
-import { SiDiscord } from "react-icons/all"; // I need to check if react-icons is installed, otherwise I'll use a generic icon
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
