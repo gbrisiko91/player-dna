@@ -26,7 +26,6 @@ export async function GET(req: Request) {
       nickname,
       id: session.id
     });
-    const { nickname } = session.metadata as any;
 
     return new Response(pdfBytes as any, {
         headers: {
