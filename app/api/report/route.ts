@@ -11,10 +11,10 @@ const COLORS = {
   bg: rgb(0.01, 0.01, 0.02),
   black: rgb(0, 0, 0),
   white: rgb(0.95, 0.95, 0.98),
-  neon: rgb(0, 0.9, 1),
-  accent: rgb(0.7, 0.2, 1),
+  neon: rgb(0, 0.85, 1),
+  accent: rgb(0.6, 0.3, 1),
   danger: rgb(0.9, 0.1, 0.2),
-  gray: rgb(0.2, 0.2, 0.3),
+  gray: rgb(0.2, 0.2, 0.25),
   dim: rgb(0.05, 0.05, 0.08),
 };
 
@@ -30,82 +30,82 @@ export async function GET(req: Request) {
 
     const { archetype_id, lang, nickname } = session.metadata as any;
     const archetype = ARCHETYPES.find(a => a.id === archetype_id) || ARCHETYPES[0];
+    const isIt = lang === 'it';
     
     const pdfDoc = await PDFDocument.create();
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontMono = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
-    // --- PAGE 1: CORE IDENTITY ---
+    // --- PAGE 1: DOSSIER IDENTITY & NEURAL CORE ---
     const page1 = pdfDoc.addPage([595.28, 841.89]);
     drawBaseLayer(page1);
-    drawHUD(page1, fontMono, "DOSS_PAGE_01/02");
+    drawHUD(page1, fontMono, "DOSS_01/02");
 
-    // Header Info
-    page1.drawText('NEURAL IDENTIFICATION DOSSIER', { x: 50, y: 780, size: 10, font: fontMono, color: COLORS.neon });
+    // Header
+    page1.drawText(isIt ? 'DOSSIER IDENTITÀ NEURALE' : 'NEURAL IDENTITY DOSSIER', { x: 50, y: 780, size: 10, font: fontMono, color: COLORS.neon });
     page1.drawText('CONFIDENTIAL', { x: 450, y: 780, size: 10, font: fontMono, color: COLORS.danger });
 
-    // Subject Identity
-    page1.drawText('SUBJECT:', { x: 50, y: 740, size: 12, font: fontMono, color: COLORS.neon });
+    // Subject
+    page1.drawText(isIt ? 'SOGGETTO:' : 'SUBJECT:', { x: 50, y: 745, size: 12, font: fontMono, color: COLORS.neon });
     page1.drawText(nickname.toUpperCase(), { x: 50, y: 700, size: 48, font: fontBold, color: COLORS.white });
     
-    const arcName = lang === 'it' ? archetype.name_it.toUpperCase() : archetype.name.toUpperCase();
-    page1.drawText('DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: COLORS.neon });
-    page1.drawText(arcName, { x: 50, y: 630, size: 28, font: fontBold, color: COLORS.accent });
+    const arcName = isIt ? archetype.name_it.toUpperCase() : archetype.name.toUpperCase();
+    page1.drawText(isIt ? 'DESIGNAZIONE:' : 'DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: COLORS.neon });
+    page1.drawText(arcName, { x: 50, y: 630, size: 32, font: fontBold, color: COLORS.accent });
 
-    // Archetype Card Area
-    drawTechBox(page1, 50, 420, 495, 180, fontMono, "NEURAL_CORE_ANALYSIS");
-    const motivation = lang === 'it' ? archetype.motivation_it : archetype.motivation;
-    drawWrappedText(page1, motivation, 70, 560, 455, 12, fontRegular, COLORS.white);
+    // Archetype Description
+    drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "ANALISI_CORE" : "CORE_ANALYSIS");
+    const motivation = isIt ? archetype.motivation_it : archetype.motivation;
+    drawWrappedText(page1, motivation, 70, 565, 455, 12, fontRegular, COLORS.white);
 
     // Radar Matrix
-    page1.drawText('PSYCHOMETRIC_MATRIX:', { x: 50, y: 380, size: 10, font: fontMono, color: COLORS.neon });
+    page1.drawText(isIt ? 'MATRICE_PSICOMETRICA:' : 'PSYCHOMETRIC_MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: COLORS.neon });
     const traitValues = [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience];
     const traitLabels = ['EGO', 'CLUTCH', 'TOXIC', 'TACTICS', 'RESIL'];
-    drawRadarChart(page1, 180, 220, 180, traitValues, traitLabels, COLORS.neon, fontBold, fontMono);
+    drawRadarChart(page1, 200, 215, 190, traitValues, traitLabels, COLORS.neon, fontBold, fontMono);
 
-    // Trait List next to Radar
-    let traitY = 320;
+    // Stats side list
+    let tY = 320;
     traitLabels.forEach((l, i) => {
-        page1.drawText(`${l}: ${traitValues[i]}%`, { x: 400, y: traitY, size: 11, font: fontMono, color: COLORS.white });
-        page1.drawRectangle({ x: 400, y: traitY - 10, width: 100, height: 4, color: COLORS.gray });
-        page1.drawRectangle({ x: 400, y: traitY - 10, width: traitValues[i], height: 4, color: COLORS.neon });
-        traitY -= 35;
+        page1.drawText(`${l}: ${traitValues[i]}%`, { x: 410, y: tY, size: 11, font: fontMono, color: COLORS.white });
+        page1.drawRectangle({ x: 410, y: tY - 10, width: 100, height: 4, color: COLORS.gray });
+        page1.drawRectangle({ x: 410, y: tY - 10, width: traitValues[i], height: 4, color: COLORS.neon });
+        tY -= 40;
     });
 
-    // --- PAGE 2: ANALYTICS & VERIFICATION ---
+    // --- PAGE 2: RANKING, OPTIMIZATION & SEAL ---
     const page2 = pdfDoc.addPage([595.28, 841.89]);
     drawBaseLayer(page2);
-    drawHUD(page2, fontMono, "DOSS_PAGE_02/02");
+    drawHUD(page2, fontMono, "DOSS_02/02");
 
     // Global Stats
-    page2.drawText('GLOBAL_POPULATION_RANKING', { x: 50, y: 780, size: 12, font: fontBold, color: COLORS.white });
-    page2.drawText('TOP 2.7%', { x: 50, y: 710, size: 72, font: fontBold, color: COLORS.neon });
-    page2.drawText('RARITY PERCENTILE DETECTED', { x: 55, y: 690, size: 10, font: fontMono, color: COLORS.white });
+    page2.drawText(isIt ? 'POSIZIONAMENTO GLOBALE' : 'GLOBAL POPULATION RANKING', { x: 50, y: 780, size: 12, font: fontBold, color: COLORS.white });
+    page2.drawText('TOP 2.7%', { x: 50, y: 710, size: 85, font: fontBold, color: COLORS.neon });
+    page2.drawText(isIt ? 'PERCENTUALE DI RARITÀ RILEVATA' : 'RARITY PERCENTILE DETECTED', { x: 55, y: 690, size: 10, font: fontMono, color: COLORS.white });
 
-    // Optimization Vectors
-    drawTechBox(page2, 50, 480, 495, 160, fontMono, "NEURAL_OPTIMIZATION_VECTORS");
-    const recommendation = lang === 'it' 
+    // Optimization
+    drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "VETTORI_DI_OTTIMIZZAZIONE" : "OPTIMIZATION_VECTORS");
+    const recommendation = isIt 
         ? "1. Forza scenari di fine partita per sfruttare l'alto indice CLUTCH.\n2. Usa la dominanza EGO per guidare la comunicazione del team.\n3. Riduci lo stress biologico nei primi round per mantenere performance meccaniche di picco."
         : "1. Force late-game scenarios to exploit high CLUTCH index.\n2. Utilize EGO dominance to lead team communication.\n3. Minimize early-round biological stress to sustain peak mechanical performance.";
-    drawWrappedText(page2, recommendation, 70, 600, 455, 11, fontRegular, COLORS.white);
+    drawWrappedText(page2, recommendation, 70, 605, 455, 12, fontRegular, COLORS.white);
 
-    // Official Verification
-    const sealSize = 180;
-    drawComplexSeal(page2, 297, 300, sealSize, nickname, fontBold, fontMono);
+    // Verification Seal
+    drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono);
 
-    // Legal Clause
-    const legalTitle = lang === 'it' ? "CERTIFICAZIONE NEURALE UFFICIALE" : "OFFICIAL NEURAL CERTIFICATION";
-    const legalClause = lang === 'it'
-        ? "Questo documento è un dossier di identità unico generato dal sistema PlayerDNA. La riproduzione o la falsificazione di questo certificato è severamente vietata secondo i protocolli di sicurezza neurale vigenti. Ogni copia non autorizzata verrà considerata nulla."
-        : "This document is a unique generated identity dossier by PlayerDNA. Reproduction or falsification of this certificate is strictly prohibited under current neural security protocols. Any unauthorized copy will be considered void.";
+    // Legal / Certification
+    const legalTitle = isIt ? "CERTIFICAZIONE DI UNICITÀ E NON RIPRODUZIONE" : "CERTIFICATION OF UNIQUENESS & NON-REPRODUCTION";
+    const legalClause = isIt
+        ? "Questo documento è un dossier d'identità neurale unico, generato esclusivamente per il soggetto sopra indicato. La riproduzione, falsificazione o distribuzione non autorizzata di questo certificato è severamente vietata dai protocolli PlayerDNA. Ogni tentativo di contraffazione invaliderà l'autenticità del profilo."
+        : "This document is a unique neural identity dossier, generated exclusively for the subject indicated above. Unauthorized reproduction, falsification, or distribution of this certificate is strictly prohibited under PlayerDNA protocols. Any attempt at forgery will void the profile authenticity.";
     
-    page2.drawText(legalTitle, { x: 50, y: 150, size: 10, font: fontBold, color: COLORS.white });
-    drawWrappedText(page2, legalClause, 50, 135, 495, 8, fontRegular, COLORS.gray);
+    page2.drawText(legalTitle, { x: 50, y: 155, size: 10, font: fontBold, color: COLORS.white });
+    drawWrappedText(page2, legalClause, 50, 140, 495, 8, fontRegular, COLORS.gray);
 
-    // Footer metadata
+    // Footer
     page2.drawText(`VER_ID: ${sessionId.substring(0, 16).toUpperCase()}`, { x: 50, y: 60, size: 7, font: fontMono, color: COLORS.gray });
-    page2.drawText('AUTHENTICITY STATUS: VERIFIED BY PLAYERDNA LABS', { x: 300, y: 60, size: 7, font: fontMono, color: COLORS.neon });
+    page2.drawText('STATUS: VERIFIED BY PLAYERDNA LABS', { x: 340, y: 60, size: 7, font: fontMono, color: COLORS.neon });
 
     const pdfBytes = await pdfDoc.save();
     return new Response(pdfBytes as any, { headers: { 'Content-Type': 'application/pdf' } });
@@ -114,8 +114,6 @@ export async function GET(req: Request) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
 }
-
-// --- VISUAL ENGINE ---
 
 function drawBaseLayer(page: PDFPage) {
     const { width, height } = page.getSize();
