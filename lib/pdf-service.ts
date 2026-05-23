@@ -229,8 +229,8 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
               <h1 class="title">${isIt ? 'ACCESSO AUTORIZZATO' : 'ACCESS AUTHORIZED'}</h1>
               <p>
                 ${isIt 
-                  ? `Il tuo <span class="highlight">Premium Neural Report</span> è stato generato. Abbiamo analizzato le tue sinapsi per decodificare il tuo DNA competitivo.` 
-                  : `Your <span class="highlight">Premium Neural Report</span> has been generated. We have analyzed your synapses to decode your competitive DNA.`
+                  ? `Complimenti, Operatore. La tua transazione è stata confermata e il tuo <span class="highlight">Premium Neural Report</span> è ora sbloccato. Sei tra i pochi ad avere accesso a questa profondità di analisi.` 
+                  : `Congratulations, Operator. Your transaction has been confirmed and your <span class="highlight">Premium Neural Report</span> is now unlocked. You are among the few with access to this depth of analysis.`
                 }
               </p>
               <div class="box">
@@ -239,14 +239,20 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
               </div>
               <p>
                 ${isIt 
-                  ? `Il dossier allegato contiene l'analisi completa del tuo archetipo <span class="highlight">${archetype.name}</span>.` 
-                  : `The attached dossier contains the full analysis of your archetype: <span class="highlight">${archetype.name}</span>.`
+                  ? `Abbiamo decodificato il tuo stile di gioco come <span class="highlight">${archetype.name}</span>. Il dossier allegato contiene la mappatura completa dei tuoi tratti neurali, i vettori di miglioramento e il tuo certificato di identità unico.` 
+                  : `We have decoded your playstyle as <span class="highlight">${archetype.name}</span>. The attached dossier contains the full mapping of your neural traits, improvement vectors, and your unique identity certificate.`
                 }
               </p>
-              <p>${isIt ? 'Analizza i tuoi tratti. Domina la lobby.' : 'Analyze your traits. Dominate the lobby.'}</p>
+              <p>
+                ${isIt
+                  ? `Usa queste informazioni con saggezza. Analizza i tuoi tratti. Domina la lobby.`
+                  : `Use this information wisely. Analyze your traits. Dominate the lobby.`
+                }
+              </p>
             </div>
             <div class="footer">
-              PlayerDNA.gg // Neural Identity Lab // 2026
+              PlayerDNA.gg // Neural Identity Lab // 2026<br>
+              ${isIt ? 'Ricevuta disponibile nella tua dashboard di pagamento.' : 'Receipt available in your payment dashboard.'}
             </div>
           </div>
         </body>
