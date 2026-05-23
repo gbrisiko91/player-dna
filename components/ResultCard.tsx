@@ -18,6 +18,9 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
 
   const { lang, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
+  
+  if (!archetype) return <div className="p-8 border border-white/10 text-gray-500 font-esports text-[10px] uppercase">Neural Data Corrupted</div>;
+
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -102,7 +105,7 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
         body: JSON.stringify({
           userId: user.id,
           archetype: archetype.name,
-          discordId: user.user_metadata.provider_id
+          discordId: user.user_metadata?.provider_id || user.id
         }),
       });
 
@@ -266,7 +269,7 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
             ) : (
               <ShieldCheck className="w-5 h-5" />
             )}
-            {isReportDownloading ? t.result.processing : t.dashboard.downloadReport}
+            {isReportDownloading ? t.result.processing : (t.dashboard?.downloadReport || 'DOWNLOAD REPORT')}
           </button>
         ) : (
           <button

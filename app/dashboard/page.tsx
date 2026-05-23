@@ -95,7 +95,7 @@ export default function Dashboard() {
             <h2 className="text-5xl md:text-7xl font-esports italic font-black uppercase tracking-tighter leading-none">
               {t.dashboard.welcome} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-                {user.user_metadata.full_name || user.email?.split('@')[0] || 'PLAYER'}
+                {user.user_metadata?.full_name || user.email?.split('@')[0] || 'PLAYER'}
               </span>
             </h2>
           </div>
@@ -156,7 +156,7 @@ export default function Dashboard() {
                         <div className="w-1 h-10" style={{ backgroundColor: item.archetype?.color }} />
                         <div>
                           <span className="block font-esports uppercase tracking-wider text-sm group-hover:text-white transition-colors">
-                            {item.archetype?.name}
+                            {item.archetype?.name || 'Unknown Archetype'}
                           </span>
                           <span className="text-[9px] text-gray-600 font-esports uppercase">
                             {new Date(item.created_at).toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-US')}
