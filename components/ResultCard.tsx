@@ -34,6 +34,8 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
     });
   }, []);
 
+  if (!archetype) return <div className="p-8 border border-white/10 text-gray-500 font-esports text-[10px] uppercase">Neural Data Corrupted</div>;
+
   const handleDownloadReport = async () => {
     if (!share_token) return;
     setIsReportDownloading(true);

@@ -79,7 +79,7 @@ export default function Navbar() {
           {user ? (
             <div className="flex items-center gap-4">
               <Link href="/dashboard" className="w-10 h-10 border border-dna-neon/50 p-1 rounded-full overflow-hidden hover:scale-110 transition-transform">
-                 <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                 <img src={user.user_metadata?.avatar_url || 'https://via.placeholder.com/150'} alt="Profile" className="w-full h-full rounded-full object-cover" />
               </Link>
               <button onClick={() => supabase.auth.signOut()} className="text-gray-400 hover:text-white">
                 <LogOut className="w-5 h-5" />
