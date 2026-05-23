@@ -12,14 +12,61 @@ export default function QuizSystem() {
   const { lang, t } = useLanguage();
   const [step, setStep] = useState(0); // 0: Start, 1: Quiz, 2: Loading, 3: Result
   const [nickname, setNickname] = useState("");
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+  const [askedIndices, setAskedIndices] = useState<number[]>([]);
   const [scores, setScores] = useState<{ [key: string]: number }>({
     ego: 50, clutch: 50, toxic: 50, tactics: 50, resilience: 50
   });
-  const [result, setResult] = useState<any>(null);
-  const [shareToken, setShareToken] = useState<string | null>(null);
 
-  const startQuiz = () => setStep(1);
+  const startQuiz = () => {
+    const firstIdx = Math.floor(Math.random() * QUESTIONS.length);
+    setCurrentQuestionIndex(firstIdx);
+    setAskedIndices([firstIdx]);
+    setStep(1);
+  };
+
+  const handleAnswer = (weights: any) => {
+    const newScores = { ...scores };
+    Object.keys(weights).forEach((trait) => {
+      newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
+    });
+    setScores(newScores);
+
+    if (askedIndices.length < QUESTIONS.length) {
+      // Logic for "propedeutic" next question:
+      // Find the trait that was most affected by this answer
+      const traits = Object.keys(weights);
+      const mainTrait = traits.length > 0 ? traits[0] : null;
+
+      const remaining = QUESTIONS.map((_, i) => i).filter(i => !askedIndices.includes(i));
+      
+      let nextIdx;
+      if (mainTrait) {
+        // Try to find a question that also touches this trait
+        const related = remaining.filter(i => 
+          QUESTIONS[i].options.some(opt => Object.keys(opt.weights).includes(mainTrait))
+        );
+        if (related.length > 0) {
+          nextIdx = related[Math.floor(Math.random() * related.length)];
+        } else {
+          nextIdx = remaining[Math.floor(Math.random() * remaining.length)];
+        }
+      } else {
+        nextIdx = remaining[Math.floor(Math.random() * remaining.length)];
+      }
+
+      setCurrentQuestionIndex(nextIdx);
+      setAskedIndices([...askedIndices, nextIdx]);
+    } else {
+      setStep(2);
+      setTimeout(async () => {
+        const dna = calculateDNA(newScores);
+        setResult(dna);
+        await saveResult(dna, newScores);
+        setStep(3);
+      }, 3500);
+    }
+  };
 
   const saveResult = async (dna: any, finalScores: any) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -43,25 +90,8 @@ export default function QuizSystem() {
     }
   };
 
-  const handleAnswer = (weights: any) => {
-    const newScores = { ...scores };
-    Object.keys(weights).forEach((trait) => {
-      newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
-    });
-    setScores(newScores);
-
-    if (currentQuestion < QUESTIONS.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setStep(2);
-      setTimeout(async () => {
-        const dna = calculateDNA(newScores);
-        setResult(dna);
-        await saveResult(dna, newScores);
-        setStep(3);
-      }, 3500);
-    }
-  };
+  const [result, setResult] = useState<any>(null);
+  const [shareToken, setShareToken] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-[#030303] flex items-center justify-center p-4 relative overflow-hidden">
@@ -111,24 +141,24 @@ export default function QuizSystem() {
           >
             <div className="mb-16">
               <div className="flex justify-between items-end mb-4 font-esports text-[10px] tracking-[0.4em] text-gray-600 uppercase">
-                <span>{t.quiz.sequence} {currentQuestion + 1} / {QUESTIONS.length}</span>
+                <span>{t.quiz.sequence} {askedIndices.length} / {QUESTIONS.length}</span>
                 <span className="text-dna-neon">{t.quiz.scanning}</span>
               </div>
               <div className="h-[3px] bg-white/5 w-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${((currentQuestion + 1) / QUESTIONS.length) * 100}%` }}
+                  animate={{ width: `${(askedIndices.length / QUESTIONS.length) * 100}%` }}
                   className="h-full bg-dna-neon shadow-[0_0_15px_rgba(0,242,255,1)]"
                 />
               </div>
             </div>
 
             <h3 className="text-4xl md:text-6xl font-esports italic font-black mb-16 uppercase leading-tight tracking-tighter">
-              {lang === 'it' ? QUESTIONS[currentQuestion].text_it : QUESTIONS[currentQuestion].text}
+              {lang === 'it' ? QUESTIONS[currentQuestionIndex].text_it : QUESTIONS[currentQuestionIndex].text}
             </h3>
 
             <div className="grid grid-cols-1 gap-4">
-              {QUESTIONS[currentQuestion].options.map((option, idx) => (
+              {QUESTIONS[currentQuestionIndex].options.map((option, idx) => (
                 <motion.button
                   key={idx}
                   whileHover={{ x: 10, backgroundColor: "rgba(0, 242, 255, 0.08)", borderColor: "rgba(0, 242, 255, 0.4)" }}

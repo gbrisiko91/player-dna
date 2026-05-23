@@ -22,7 +22,8 @@ export const translations = {
       calibrating: "CALIBRATING",
     },
     worldData: {
-      title: "WORLD",
+      title: "GLOBAL",
+      titleSecondary: "DATA",
       subtitle: "Real-time global network synchronization",
       distribution: "GLOBAL DISTRIBUTION",
       networkSize: "Network size: {size} scanned devs",
@@ -62,6 +63,18 @@ export const translations = {
       desc: "Join thousands of players already optimized. Get your role, share your DNA, and dominate the leaderboard.",
       discord: "Step 1: Join Discord",
       scan: "Step 2: Start Scan",
+    },
+    success: {
+      loading: "GENERATING NEURAL REPORT...",
+      loadingDesc: "Encrypting datasets / Mapping synapses",
+      title: "TRANSACTION SUCCESS",
+      desc: "Your **Premium Neural Report** is ready. We have analyzed every response to create the ultimate dossier on your competitive identity.",
+      download: "Download PDF",
+      premium: "PREMIUM",
+      share: "Share Access",
+      security: "Security Protocol: AES-256 Encrypted",
+      back: "Back to Command Center",
+      initLink: "Initializing Secure Link...",
     }
   },
   it: {
@@ -86,6 +99,7 @@ export const translations = {
     },
     worldData: {
       title: "DATI",
+      titleSecondary: "GLOBALI",
       subtitle: "Sincronizzazione globale in tempo reale",
       distribution: "DISTRIBUZIONE GLOBALE",
       networkSize: "Rete: {size} player scansionati",
@@ -126,6 +140,18 @@ export const translations = {
       desc: "Unisciti a migliaia di player già ottimizzati. Ottieni il tuo ruolo, condividi il tuo DNA e domina la classifica.",
       discord: "Passo 1: Entra su Discord",
       scan: "Passo 2: Inizia Scan",
+    },
+    success: {
+      loading: "GENERAZIONE REPORT NEURALE...",
+      loadingDesc: "Criptaggio dataset / Mappatura sinapsi",
+      title: "TRANSAZIONE RIUSCITA",
+      desc: "Il tuo **Premium Neural Report** è pronto. Abbiamo analizzato ogni tua risposta per creare il dossier definitivo sulla tua identità competitiva.",
+      download: "Scarica PDF",
+      premium: "PREMIUM",
+      share: "Condividi Accesso",
+      security: "Protocollo di Sicurezza: Criptato AES-256",
+      back: "Torna al Centro di Comando",
+      initLink: "Inizializzazione Link Sicuro...",
     }
   }
 };

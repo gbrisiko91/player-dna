@@ -95,28 +95,42 @@ export async function GET(req: Request) {
         : "• Leverage your natural dominance to dictate the match tempo.\n• Identify emotional triggers that precede cognitive desynchronization.\n• Optimize post-match recovery times to prevent 'neural burnout'.\n• Coordinate teammates using your specific tactical footprint.";
     drawWrappedText(page2, recommendation, 70, 610, 455, 11, fontRegular, COLORS.white);
 
-    // Verification Seal
-    drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono);
-
-    // Legal / Certification
-    const legalTitle = isIt ? "CERTIFICAZIONE DI UNICITÀ E NON RIPRODUZIONE" : "CERTIFICATION OF UNIQUENESS & NON-REPRODUCTION";
-    const legalClause = isIt
-        ? "Questo documento è un dossier d'identità neurale unico, generato esclusivamente per il soggetto sopra indicato. La riproduzione, falsificazione o distribuzione non autorizzata di questo certificato è severamente vietata dai protocolli PlayerDNA. Ogni tentativo di contraffazione invaliderà l'autenticità del profilo."
-        : "This document is a unique neural identity dossier, generated exclusively for the subject indicated above. Unauthorized reproduction, falsification, or distribution of this certificate is strictly prohibited under PlayerDNA protocols. Any attempt at forgery will void the profile authenticity.";
+    // Verification Seal & Certificate
+    const certId = `DNA-CERT-${sessionId.substring(sessionId.length - 8).toUpperCase()}`;
+    drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono, certId);
     
-    page2.drawText(legalTitle, { x: 50, y: 155, size: 10, font: fontBold, color: COLORS.white });
-    drawWrappedText(page2, legalClause, 50, 140, 495, 8, fontRegular, COLORS.gray);
-
-    // Footer
-    page2.drawText(`VER_ID: ${sessionId.substring(0, 16).toUpperCase()}`, { x: 50, y: 60, size: 7, font: fontMono, color: COLORS.gray });
-    page2.drawText('STATUS: VERIFIED BY PLAYERDNA LABS', { x: 340, y: 60, size: 7, font: fontMono, color: COLORS.neon });
+    page2.drawText(isIt ? 'CERTIFICATO UFFICIALE DI IDENTITÀ NEURALE' : 'OFFICIAL NEURAL IDENTITY CERTIFICATE', {
+        x: 297 - 120,
+        y: 120,
+        size: 8,
+        font: fontMono,
+        color: COLORS.white,
+        opacity: 0.6
+    });
 
     const pdfBytes = await pdfDoc.save();
-    return new Response(pdfBytes as any, { headers: { 'Content-Type': 'application/pdf' } });
-
+    return new Response(pdfBytes as any, {
+        headers: {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="PlayerDNA_Dossier_${nickname}.pdf"`,
+        },
+    });
   } catch (err: any) {
+    console.error('PDF error:', err);
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
   }
+}
+
+function drawComplexSeal(page: PDFPage, cx: number, cy: number, r: number, nickname: string, fontB: any, fontM: any, certId: string) {
+    const nText = nickname.toUpperCase();
+    const nw = fontB.widthOfTextAtSize(nText, 22);
+    
+    page.drawCircle({ x: cx, y: cy, size: r/2, color: COLORS.dim, borderColor: COLORS.neon, borderWidth: 2 });
+    page.drawCircle({ x: cx, y: cy, size: r/2 - 10, borderColor: COLORS.white, borderWidth: 0.5, opacity: 0.3 });
+    
+    page.drawText(nText, { x: cx - nw/2, y: cy - 8, size: 22, font: fontB, color: COLORS.white });
+    page.drawText("VERIFIED PLAYER", { x: cx - 35, y: cy + 50, size: 8, font: fontM, color: COLORS.neon });
+    page.drawText(certId, { x: cx - 45, y: cy - 60, size: 8, font: fontM, color: COLORS.neon });
 }
 
 function drawBaseLayer(page: PDFPage) {
@@ -149,17 +163,6 @@ function drawTechBox(page: PDFPage, x: number, y: number, w: number, h: number, 
     page.drawRectangle({ x, y, width: w, height: h, borderColor: color, borderWidth: 1, opacity: 0.2 });
     page.drawRectangle({ x, y: y+h-12, width: 150, height: 12, color });
     page.drawText(title, { x: x + 5, y: y + h - 9, size: 7, font, color: COLORS.black });
-}
-
-function drawComplexSeal(page: PDFPage, cx: number, cy: number, size: number, nick: string, fontB: any, fontM: any) {
-    const r = size/2;
-    page.drawCircle({ x: cx, y: cy, size: r, borderColor: COLORS.neon, borderWidth: 3 });
-    page.drawCircle({ x: cx, y: cy, size: r-15, borderColor: COLORS.neon, borderWidth: 1, opacity: 0.5 });
-    const nText = nick.toUpperCase();
-    const nw = fontB.widthOfTextAtSize(nText, 22);
-    page.drawText(nText, { x: cx - nw/2, y: cy - 8, size: 22, font: fontB, color: COLORS.white });
-    page.drawText("VERIFIED PLAYER", { x: cx - 35, y: cy + 50, size: 8, font: fontM, color: COLORS.neon });
-    page.drawText("DNA ORIGIN ID", { x: cx - 30, y: cy - 60, size: 8, font: fontM, color: COLORS.neon });
 }
 
 function drawRadarChart(page: PDFPage, x: number, y: number, size: number, values: number[], labels: string[], color: any, fontB: any, fontMono: any) {

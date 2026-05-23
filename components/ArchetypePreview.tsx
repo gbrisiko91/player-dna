@@ -46,7 +46,7 @@ export default function ArchetypePreview() {
                 </div>
                 
                 <h4 className="text-4xl font-esports italic font-black uppercase mb-4 group-hover:text-glow transition-all" style={{ color: archetype.color }}>
-                  {lang === 'it' ? archetype.name_it : archetype.name}
+                  {archetype.name}
                 </h4>
                 
                 <p className="text-sm text-gray-400 font-light leading-relaxed group-hover:text-gray-200 transition-colors">

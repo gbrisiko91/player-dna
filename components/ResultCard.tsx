@@ -154,7 +154,7 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
               className="text-3xl md:text-4xl font-esports italic font-black uppercase tracking-tighter leading-[0.9]"
               style={{ color: archetype.color, textShadow: `0 0 20px ${archetype.color}44` }}
             >
-              {lang === 'it' ? archetype.name_it : archetype.name}
+              {archetype.name}
             </h2>
           </div>
 

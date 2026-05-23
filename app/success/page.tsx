@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import { Download, Loader2, Share2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 function SuccessContent() {
+  const { t } = useLanguage();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
@@ -61,8 +63,8 @@ function SuccessContent() {
       {status === "loading" ? (
         <div className="text-center py-20">
           <Loader2 className="w-16 h-16 text-dna-neon animate-spin mx-auto mb-8" />
-          <h2 className="text-cyber text-4xl italic animate-pulse">GENERATING NEURAL REPORT...</h2>
-          <p className="font-esports text-[10px] text-gray-500 tracking-[0.5em] mt-4 uppercase">Encrypting datasets / Mapping synapses</p>
+          <h2 className="text-cyber text-4xl italic animate-pulse">{t.success.loading}</h2>
+          <p className="font-esports text-[10px] text-gray-500 tracking-[0.5em] mt-4 uppercase">{t.success.loadingDesc}</p>
         </div>
       ) : (
         <motion.div 
@@ -74,9 +76,9 @@ function SuccessContent() {
             <ShieldCheck className="w-10 h-10 text-dna-toxic" />
           </div>
           
-          <h1 className="text-cyber text-4xl md:text-6xl lg:text-7xl mb-4 italic uppercase">TRANSACTION SUCCESS</h1>
+          <h1 className="text-cyber text-4xl md:text-6xl lg:text-7xl mb-4 italic uppercase">{t.success.title}</h1>
           <p className="text-gray-400 mb-12 font-light text-lg">
-            Il tuo **Premium Neural Report** è pronto. Abbiamo analizzato ogni tua risposta per creare il dossier definitivo sulla tua identità competitiva.
+            {t.success.desc}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
@@ -85,20 +87,20 @@ function SuccessContent() {
               className="group relative py-6 bg-white text-black font-esports text-sm tracking-widest uppercase hover:bg-dna-neon transition-all flex items-center justify-center gap-3"
             >
               <Download className="w-5 h-5" />
-              Download PDF
-              <div className="absolute -top-2 -right-2 bg-dna-danger text-white text-[8px] px-2 py-1">PREMIUM</div>
+              {t.success.download}
+              <div className="absolute -top-2 -right-2 bg-dna-danger text-white text-[8px] px-2 py-1">{t.success.premium}</div>
             </button>
             
             <button className="py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase flex items-center justify-center gap-3">
               <Share2 className="w-5 h-5" />
-              Share Access
+              {t.success.share}
             </button>
           </div>
 
           <div className="pt-8 border-t border-white/5 flex flex-col items-center gap-4">
-            <p className="text-[10px] font-esports text-gray-600 tracking-[0.3em] uppercase">Security Protocol: AES-256 Encrypted</p>
+            <p className="text-[10px] font-esports text-gray-600 tracking-[0.3em] uppercase">{t.success.security}</p>
             <Link href="/" className="text-dna-neon font-esports text-[10px] tracking-widest hover:underline uppercase">
-              Back to Command Center
+              {t.success.back}
             </Link>
           </div>
         </motion.div>
@@ -108,6 +110,7 @@ function SuccessContent() {
 }
 
 export default function SuccessPage() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-[#030303] text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background FX */}
@@ -119,7 +122,7 @@ export default function SuccessPage() {
       <Suspense fallback={
         <div className="relative z-10 w-full max-w-2xl bg-black/60 border border-white/10 p-12 backdrop-blur-xl flex flex-col items-center py-20">
           <Loader2 className="w-16 h-16 text-dna-neon animate-spin mb-8" />
-          <h2 className="text-cyber text-4xl italic animate-pulse uppercase">Initializing Secure Link...</h2>
+          <h2 className="text-cyber text-4xl italic animate-pulse uppercase">{t.success.initLink}</h2>
         </div>
       }>
         <SuccessContent />
