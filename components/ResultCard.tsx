@@ -10,9 +10,11 @@ import { useLanguage } from "@/context/LanguageContext";
 interface ResultCardProps {
   archetype: Archetype;
   nickname: string;
+  share_token?: string;
+  is_premium?: boolean;
 }
 
-export default function ResultCard({ archetype, nickname }: ResultCardProps) {
+export default function ResultCard({ archetype, nickname, share_token, is_premium }: ResultCardProps) {
 
   const { lang, t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -21,12 +23,42 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
   const [user, setUser] = useState<any>(null);
   const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isReportDownloading, setIsReportDownloading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
   }, []);
+
+  const handleDownloadReport = async () => {
+    if (!share_token) return;
+    setIsReportDownloading(true);
+    try {
+      // In dashboard o success, potremmo non avere il session_id di Stripe,
+      // ma abbiamo lo share_token. Dobbiamo creare un endpoint che accetti lo share_token 
+      // e verifichi se è premium. Per ora usiamo il flusso esistente se abbiamo il sessionId,
+      // altrimenti informiamo che il download è via email o dashboard.
+      // Ottimizziamo: l'API report potrebbe accettare anche share_token se l'utente è autenticato.
+      
+      const response = await fetch(`/api/report/download?share_token=${share_token}`);
+      if (!response.ok) throw new Error("Download failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `PlayerDNA_Premium_Report_${nickname}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Download error. Use the link in your email.");
+    } finally {
+      setIsReportDownloading(false);
+    }
+  };
 
   const handleCheckout = async () => {
     setIsCheckoutLoading(true);
@@ -38,7 +70,8 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
           archetype: archetype.name,
           archetype_id: archetype.id,
           lang: lang,
-          nickname: nickname
+          nickname: nickname,
+          share_token: share_token
         }),
       });
       const { url } = await response.json();
@@ -222,18 +255,33 @@ export default function ResultCard({ archetype, nickname }: ResultCardProps) {
 
       {/* Action Buttons */}
       <div className="w-full max-w-[380px] flex flex-col gap-3">
-        <button
-          onClick={handleCheckout}
-          disabled={isCheckoutLoading}
-          className="w-full py-5 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(168,85,247,0.4)]"
-        >
-          {isCheckoutLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Crown className="w-5 h-5" />
-          )}
-          {isCheckoutLoading ? t.result.processing : t.result.premium}
-        </button>
+        {is_premium ? (
+          <button
+            onClick={handleDownloadReport}
+            disabled={isReportDownloading}
+            className="w-full py-5 bg-dna-neon text-black font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,242,255,0.4)]"
+          >
+            {isReportDownloading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <ShieldCheck className="w-5 h-5" />
+            )}
+            {isReportDownloading ? t.result.processing : t.dashboard.downloadReport}
+          </button>
+        ) : (
+          <button
+            onClick={handleCheckout}
+            disabled={isCheckoutLoading}
+            className="w-full py-5 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(168,85,247,0.4)]"
+          >
+            {isCheckoutLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Crown className="w-5 h-5" />
+            )}
+            {isCheckoutLoading ? t.result.processing : t.result.premium}
+          </button>
+        )}
 
         <button
           onClick={handleDownload}

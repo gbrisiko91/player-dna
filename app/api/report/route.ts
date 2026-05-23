@@ -18,7 +18,14 @@ export async function GET(req: Request) {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status !== 'paid') return new Response(JSON.stringify({ error: 'Not paid' }), { status: 403 });
 
-    const pdfBytes = await generatePDF(session);
+    const { archetype_id, lang, nickname } = session.metadata as any;
+
+    const pdfBytes = await generatePDF({
+      archetype_id,
+      lang,
+      nickname,
+      id: session.id
+    });
     const { nickname } = session.metadata as any;
 
     return new Response(pdfBytes as any, {

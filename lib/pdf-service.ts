@@ -20,9 +20,9 @@ const COLORS = {
   dim: rgb(0.05, 0.05, 0.08),
 };
 
-export async function generatePDF(session: any) {
-    const { archetype_id, lang, nickname } = session.metadata as any;
-    const archetype = ARCHETYPES.find(a => a.id === archetype_id) || ARCHETYPES[0];
+export async function generatePDF(data: { archetype_id: string, lang: string, nickname: string, id: string }) {
+    const { archetype_id, lang, nickname, id } = data;
+    const archetype = ARCHETYPES.find(a => a.id === archetype_id) || ARCHETYPES.find(a => a.slug === archetype_id) || ARCHETYPES[0];
     const isIt = lang === 'it';
 
     const hexToRgb = (hex: string) => {
@@ -89,7 +89,7 @@ export async function generatePDF(session: any) {
         : "• Leverage your natural dominance to dictate the match tempo.\n• Identify emotional triggers that precede cognitive desynchronization.\n• Optimize post-match recovery times to prevent 'neural burnout'.\n• Coordinate teammates using your specific tactical footprint.";
     drawWrappedText(page2, recommendation, 70, 610, 455, 11, fontRegular, COLORS.white);
 
-    const certId = `DNA-CERT-${session.id.substring(session.id.length - 8).toUpperCase()}`;
+    const certId = `DNA-CERT-${id.substring(id.length - 8).toUpperCase()}`;
     drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono, certId, themeColor);
     
     page2.drawText(isIt ? 'CERTIFICATO UFFICIALE DI IDENTITÀ NEURALE' : 'OFFICIAL NEURAL IDENTITY CERTIFICATE', {

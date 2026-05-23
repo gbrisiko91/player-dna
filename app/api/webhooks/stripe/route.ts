@@ -22,14 +22,30 @@ export async function POST(req: Request) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
+    const { share_token, archetype_id, lang, nickname } = session.metadata as any;
     
     // Genera il PDF e invia l'email in background
     try {
-      const pdfBytes = await generatePDF(session);
+      const pdfBytes = await generatePDF({
+        archetype_id,
+        lang,
+        nickname,
+        id: session.id
+      });
       await sendPremiumEmail(session, pdfBytes);
-      console.log(`Email sent for session ${session.id}`);
+      
+      // Aggiorna il database per segnare il report come premium
+      if (share_token) {
+        const { supabase } = await import('@/lib/supabase');
+        await supabase
+          .from('quiz_results')
+          .update({ is_premium: true })
+          .eq('share_token', share_token);
+      }
+      
+      console.log(`Email sent and DB updated for session ${session.id}`);
     } catch (error) {
-      console.error('Failed to send premium email:', error);
+      console.error('Failed to process post-checkout actions:', error);
     }
   }
 

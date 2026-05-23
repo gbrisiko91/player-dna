@@ -215,7 +215,7 @@ export default function QuizSystem() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center gap-16 py-20 w-full"
           >
-             <ResultCard archetype={result} nickname={nickname} />
+             <ResultCard archetype={result} nickname={nickname} share_token={shareToken || undefined} />
              
              <div className="flex flex-col md:flex-row gap-6 w-full max-w-[400px]">
                <button 
