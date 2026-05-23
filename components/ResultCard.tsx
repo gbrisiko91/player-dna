@@ -27,12 +27,16 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
   const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [isReportDownloading, setIsReportDownloading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
   }, []);
+
+  if (!mounted) return null;
 
   if (!archetype) return <div className="p-8 border border-white/10 text-gray-500 font-esports text-[10px] uppercase">Neural Data Corrupted</div>;
 

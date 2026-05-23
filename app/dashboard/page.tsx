@@ -13,6 +13,12 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const handleDownloadReport = async (share_token: string, nickname: string) => {
@@ -62,7 +68,7 @@ export default function Dashboard() {
     loadDashboard();
   }, []);
 
-  if (loading) return (
+  if (!mounted || loading) return (
     <div className="min-h-screen bg-[#030303] flex flex-col items-center justify-center">
       <Loader2 className="w-12 h-12 text-dna-neon animate-spin mb-4" />
       <div className="font-esports text-[10px] tracking-[0.5em] text-dna-neon animate-pulse uppercase">
@@ -159,7 +165,7 @@ export default function Dashboard() {
                             {item.archetype?.name || 'Unknown Archetype'}
                           </span>
                           <span className="text-[9px] text-gray-600 font-esports uppercase">
-                            {new Date(item.created_at).toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-US')}
+                            {mounted ? new Date(item.created_at).toLocaleDateString(lang === 'it' ? 'it-IT' : 'en-US') : ''}
                           </span>
                         </div>
                       </div>

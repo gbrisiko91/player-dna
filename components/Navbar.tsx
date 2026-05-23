@@ -11,8 +11,11 @@ export default function Navbar() {
   const { lang, setLang, t } = useLanguage();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showLoginMenu, setShowLoginMenu] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
@@ -28,6 +31,8 @@ export default function Navbar() {
       options: { redirectTo: window.location.origin }
     });
   };
+
+  if (!mounted) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-white/5 bg-black/60 backdrop-blur-xl">
