@@ -19,6 +19,10 @@ export default function QuizSystem() {
   });
 
   const startQuiz = () => {
+    if (nickname.trim().length < 2 || nickname.trim().length > 16) {
+      alert(lang === 'it' ? "Il nickname deve essere tra 2 e 16 caratteri." : "Nickname must be between 2 and 16 characters.");
+      return;
+    }
     const firstIdx = Math.floor(Math.random() * QUESTIONS.length);
     setCurrentQuestionIndex(firstIdx);
     setAskedIndices([firstIdx]);

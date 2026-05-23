@@ -4,6 +4,8 @@ import ArchetypePreview from "@/components/ArchetypePreview";
 import Leaderboard from "@/components/Leaderboard";
 import GlobalStats from "@/components/GlobalStats";
 import SocialProof from "@/components/SocialProof";
+import PremiumPreview from "@/components/PremiumPreview";
+import HowItWorks from "@/components/HowItWorks";
 import { Dna } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
@@ -15,7 +17,10 @@ export default function Home() {
       {/* SECTION 1: HERO (THE SCANNER) */}
       <Hero />
 
-      {/* SECTION 2: WORLD_DATA (GLOBAL STATS & LEADERBOARD) - MOVED HERE */}
+      {/* SECTION 2: HOW IT WORKS (THE SCIENCE) */}
+      <HowItWorks />
+
+      {/* SECTION 3: WORLD_DATA (GLOBAL STATS & LEADERBOARD) */}
       <section id="stats" className="py-24 px-4 bg-black/50 border-y border-white/5 relative">
         <div className="absolute inset-0 grid-mesh opacity-5" />
         <div className="max-w-6xl mx-auto relative z-10">
@@ -33,16 +38,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 3: TESTIMONIALS (REALITY CHECK) */}
+      {/* SECTION 4: TESTIMONIALS (REALITY CHECK) */}
       <div className="w-full py-40 border-b border-white/5 bg-black relative">
          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-dna-neon/50 to-transparent" />
          <SocialProof />
       </div>
 
-      {/* SECTION 4: ARCHETYPES (THE DATABASE) */}
+      {/* SECTION 5: PREMIUM PREVIEW (THE DOSSIER) */}
+      <PremiumPreview />
+
+      {/* SECTION 6: ARCHETYPES (THE DATABASE) */}
       <ArchetypePreview />
 
-      {/* SECTION 5: FINAL CTA (THE CONVERSION) */}
+      {/* SECTION 7: FINAL CTA (THE CONVERSION) */}
       <section className="py-40 px-4 bg-black relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-dna-neon to-transparent" />
         
