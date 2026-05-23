@@ -253,8 +253,8 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
       </html>
     `;
 
-    await resend.emails.send({
-      from: 'PlayerDNA <reports@player-dna.vercel.app>',
+    const { data, error } = await resend.emails.send({
+      from: 'PlayerDNA <onboarding@resend.dev>',
       to: email,
       subject: subject,
       html: html,
@@ -265,4 +265,10 @@ export async function sendPremiumEmail(session: any, pdfBuffer: Uint8Array) {
         },
       ],
     });
+
+    if (error) {
+      console.error("Resend API Error:", error);
+    } else {
+      console.log("Resend Email Sent Successfully:", data?.id);
+    }
 }
