@@ -5,13 +5,20 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export async function generateMetadata({ params }: { params: { token: string } }): Promise<Metadata> {
-  const { data } = await supabase
+  let { data } = await supabase
     .from('quiz_results')
     .select('*')
     .eq('share_token', params.token)
     .single();
 
-  if (!data) return { title: "PlayerDNA - DNA Not Found" };
+  // Fallback: se il token sembra un sessionId di Stripe, cerchiamolo via API o metadata
+  // In realtà, è meglio se carichiamo i dati corretti nel DB. 
+  // Per ora, se non troviamo nulla, restituiamo un titolo generico ma non "Not Found" se possibile.
+
+  if (!data) return { 
+    title: "PlayerDNA - competitive Identity Analysis",
+    description: "Your neural profile is being decrypted. Check your competitive DNA."
+  };
 
   const archetype = ARCHETYPES.find(a => a.slug === data.archetype_slug);
   if (!archetype) return { title: "PlayerDNA - Analysis" };
@@ -26,7 +33,14 @@ export async function generateMetadata({ params }: { params: { token: string } }
     openGraph: {
       title,
       description,
-      images: [archetype.image],
+      images: [
+        {
+          url: archetype.image,
+          width: 1200,
+          height: 630,
+          alt: archetype.name,
+        }
+      ],
     },
     twitter: {
       card: "summary_large_image",

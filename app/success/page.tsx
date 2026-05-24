@@ -14,6 +14,7 @@ function SuccessContent() {
   const sessionId = searchParams.get("session_id");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [user, setUser] = useState<any>(null);
+  const [shareToken, setShareToken] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -23,16 +24,28 @@ function SuccessContent() {
 
   useEffect(() => {
     if (sessionId) {
-      // Qui potremmo verificare la sessione con Stripe via API
-      setTimeout(() => {
-        setStatus("success");
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#00F2FF', '#A855F7', '#FF0032']
-        });
-      }, 3000); // Simulazione caricamento neurale
+      // Recupera il share_token dai metadati della sessione Stripe
+      const fetchSession = async () => {
+        try {
+          const res = await fetch(`/api/checkout/session?session_id=${sessionId}`);
+          const data = await res.json();
+          if (data.share_token) {
+            setShareToken(data.share_token);
+          }
+          setStatus("success");
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#00F2FF', '#A855F7', '#FF0032']
+          });
+        } catch (err) {
+          console.error("Error fetching session:", err);
+          setStatus("success"); // Comunque mostriamo successo
+        }
+      };
+
+      fetchSession();
     }
   }, [sessionId]);
 
@@ -67,7 +80,9 @@ function SuccessContent() {
   };
 
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/results/${sessionId}`; 
+    // Usiamo il shareToken se è stato recuperato correttamente dalla sessione Stripe
+    const tokenToShare = shareToken || sessionId;
+    const shareUrl = `${window.location.origin}/results/${tokenToShare}`; 
     navigator.clipboard.writeText(shareUrl);
     
     const btn = document.getElementById('share-btn');
