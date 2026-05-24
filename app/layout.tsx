@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "PlayerDNA | Neural Identity Protocol",
   description: "Stop counting pixels. Start mapping your competitive consciousness.",
   icons: {
-    icon: '/favicon.ico', // Anche se abbiamo app/icon.tsx, è bene metterlo
+    icon: '/favicon.ico',
   },
   metadataBase: new URL('https://player-dna.vercel.app'),
 };

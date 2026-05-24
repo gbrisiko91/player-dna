@@ -4,6 +4,7 @@ import ArchetypePreview from "@/components/ArchetypePreview";
 import Leaderboard from "@/components/Leaderboard";
 import GlobalStats from "@/components/GlobalStats";
 import SocialProof from "@/components/SocialProof";
+import PremiumTeaser from "@/components/PremiumTeaser";
 import PremiumPreview from "@/components/PremiumPreview";
 import HowItWorks from "@/components/HowItWorks";
 import { Dna } from "lucide-react";
@@ -16,6 +17,9 @@ export default function Home() {
     <div className="flex flex-col w-full bg-[#030303]">
       {/* SECTION 1: HERO (THE SCANNER) */}
       <Hero />
+
+      {/* NEW: THE MYSTERY (PREMIUM TEASER) */}
+      <PremiumTeaser />
 
       {/* SECTION 2: HOW IT WORKS (THE SCIENCE) */}
       <HowItWorks />

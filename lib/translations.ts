@@ -128,6 +128,14 @@ export const translations = {
       lockedBadge: "Locked Badge",
       upgrade: "UPGRADE TO PRO",
       downloadReport: "DOWNLOAD REPORT",
+    },
+    premiumTeaser: {
+      title: "[RESTRICTED ACCESS]",
+      subtitle: "THE NEURAL DOSSIER",
+      hook: "The free scan is just the interface. The truth lies deeper.",
+      description: "There are 57 behavioral patterns the system detects but cannot display in a public link. The specific neural trigger that makes you choke in overtime. The subconscious bias that dictates your positioning. The Dossier doesn't give you stats; it gives you the keys to your own code.",
+      redacted: "DATA REDACTED // ACCESS GRANTED ONLY TO SESSIONS WITH ACTIVE AUTH",
+      cta: "DECRYPT YOUR TRUTH"
     }
   },
   it: {
@@ -172,6 +180,14 @@ export const translations = {
       copied: "LINK COPIATO: CONDIVIDI LA TUA VERITÀ.",
     },
     result: {
+      subject: "Profilo Soggetto:",
+      frequency: "Frequenza",
+      motivation: "Analisi Scansione:",
+      premium: "SBLOCCA PREMIUM REPORT (€4.99)",
+      download: "Scarica DNA Card",
+      sync: "Sincronizza Ruolo Discord",
+      synced: "✓ Ruolo Sincronizzato",
+      processing: "Elaborazione...",
       neuralSuccess: "SCANSIONE NEURALE RIUSCITA",
     },
     premiumUpsell: {
@@ -249,6 +265,14 @@ export const translations = {
       lockedBadge: "Badge Bloccato",
       upgrade: "PASSA A PRO",
       downloadReport: "SCARICA REPORT",
+    },
+    premiumTeaser: {
+      title: "[ACCESSO LIMITATO]",
+      subtitle: "IL DOSSIER NEURALE",
+      hook: "Lo scan gratuito è solo l'interfaccia. La verità è più profonda.",
+      description: "Esistono 57 pattern comportamentali che il sistema rileva ma non può mostrare in un link pubblico. Il trigger neurale specifico che ti fa cedere sotto pressione. Il bias subconscio che detta il tuo posizionamento. Il Dossier non ti dà statistiche; ti dà le chiavi del tuo codice genetico.",
+      redacted: "DATI SECRETATI // ACCESSO CONSENTITO SOLO A SESSIONI CON AUTENTICAZIONE ATTIVA",
+      cta: "DECRIPTA LA TUA VERITÀ"
     }
   }
 };

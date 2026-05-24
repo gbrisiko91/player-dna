@@ -269,45 +269,60 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
       {/* Action Buttons */}
       <div className="w-full max-w-[380px] flex flex-col gap-3">
         {is_premium ? (
-          <button
-            onClick={handleDownloadReport}
-            disabled={isReportDownloading}
-            className="w-full py-5 bg-dna-neon text-black font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,242,255,0.4)]"
-          >
-            {isReportDownloading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ShieldCheck className="w-5 h-5" />
-            )}
-            {isReportDownloading ? t.result.processing : (t.dashboard?.downloadReport || 'DOWNLOAD REPORT')}
-          </button>
+          <>
+            <button
+              onClick={handleDownloadReport}
+              disabled={isReportDownloading}
+              className="w-full py-5 bg-dna-neon text-black font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,242,255,0.4)]"
+            >
+              {isReportDownloading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="w-5 h-5" />
+              )}
+              {isReportDownloading ? (t.result?.processing || 'Processing...') : (t.dashboard?.downloadReport || 'DOWNLOAD REPORT')}
+            </button>
+            <button 
+              onClick={handleCardDownload}
+              disabled={isDownloading}
+              className="w-full py-5 border border-white/20 hover:bg-white hover:text-black font-esports text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              <Download className="w-5 h-5" />
+              {isDownloading ? (t.result?.processing || 'Processing...') : (t.result?.download || 'DOWNLOAD DNA CARD')}
+            </button>
+          </>
         ) : (
           <button
-            onClick={handleCheckout}
+            onClick={handleUpgrade}
             disabled={isCheckoutLoading}
-            className="w-full py-5 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(168,85,247,0.4)]"
+            className="w-full py-6 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase hover:scale-[1.02] transition-all duration-300 relative group overflow-hidden disabled:opacity-50"
           >
-            {isCheckoutLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Crown className="w-5 h-5" />
-            )}
-            {isCheckoutLoading ? t.result.processing : t.result.premium}
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <div className="relative flex items-center justify-center gap-3">
+              {isCheckoutLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Crown className="w-5 h-5" />
+              )}
+              {isCheckoutLoading ? (t.result?.processing || 'Processing...') : (t.result?.premium || 'UNLOCK PREMIUM REPORT')}
+            </div>
           </button>
         )}
 
-        <button
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className="w-full py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-        >
-          {isDownloading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Download className="w-4 h-4" />
-          )}
-          {isDownloading ? t.result.processing : t.result.download}
-        </button>
+        {!is_premium && (
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="w-full py-4 bg-white hover:bg-dna-neon text-black font-esports text-xs tracking-[0.4em] uppercase transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+          >
+            {isDownloading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            {isDownloading ? (t.result?.processing || 'Processing...') : (t.result?.download || 'DOWNLOAD DNA CARD')}
+          </button>
+        )}
 
         {user && (
           <button

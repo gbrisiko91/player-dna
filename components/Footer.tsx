@@ -14,8 +14,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
         <div className="md:col-span-2">
           <Link href="/" className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 bg-dna-neon flex items-center justify-center">
-              <Dna className="w-5 h-5 text-black" />
+            <div className="w-10 h-10 relative">
+              <img src="/logo.png" alt="PlayerDNA Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-esports italic font-black text-2xl tracking-tighter">
               PLAYER<span className="text-dna-neon">DNA</span>

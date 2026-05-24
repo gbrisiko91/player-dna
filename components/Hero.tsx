@@ -20,13 +20,18 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-4 mb-8"
+          className="flex flex-col items-center gap-6 mb-8"
         >
-          <div className="h-px w-12 bg-dna-neon/50" />
-          <span className="font-esports text-[10px] tracking-[0.5em] text-dna-neon uppercase">
-            {t.hero.protocol}
-          </span>
-          <div className="h-px w-12 bg-dna-neon/50" />
+          <div className="w-24 h-24 relative">
+            <img src="/logo.png" alt="PlayerDNA Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(0,242,255,0.5)]" />
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-px w-12 bg-dna-neon/50" />
+            <span className="font-esports text-[10px] tracking-[0.5em] text-dna-neon uppercase">
+              {t.hero.protocol}
+            </span>
+            <div className="h-px w-12 bg-dna-neon/50" />
+          </div>
         </motion.div>
 
         {/* Main Title */}

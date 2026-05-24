@@ -37,11 +37,11 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-white/5 bg-black/60 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-dna-neon flex items-center justify-center">
-            <Dna className="w-5 h-5 text-black" />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 relative flex items-center justify-center group-hover:scale-110 transition-transform">
+            <img src="/logo.png" alt="PlayerDNA Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-esports italic font-black text-2xl tracking-tighter">
+          <span className="font-esports italic font-black text-2xl tracking-tighter group-hover:text-dna-neon transition-colors">
             PLAYER<span className="text-dna-neon">DNA</span>
           </span>
         </Link>
