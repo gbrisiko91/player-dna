@@ -68,6 +68,34 @@ export default function Dashboard() {
     loadDashboard();
   }, []);
 
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  const handleUpgrade = async (item: any) => {
+    setIsCheckoutLoading(true);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          archetype: item.archetype?.name,
+          archetype_id: item.archetype?.id,
+          lang: lang,
+          nickname: item.nickname || 'PLAYER',
+          share_token: item.share_token
+        }),
+      });
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      console.error("Stripe error:", err);
+      alert("Checkout error. Please try again.");
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
   if (!mounted || loading) return (
     <div className="min-h-screen bg-[#030303] flex flex-col items-center justify-center">
       <Loader2 className="w-12 h-12 text-dna-neon animate-spin mb-4" />
@@ -106,10 +134,16 @@ export default function Dashboard() {
             </h2>
           </div>
           <div className="flex gap-4">
-            <button className="group relative px-8 py-4 bg-transparent border border-dna-toxic/30 text-dna-toxic font-esports text-[10px] tracking-widest uppercase hover:bg-dna-toxic hover:text-black transition-all duration-300 flex items-center gap-3">
-              <Crown className="w-4 h-4" />
-              {t.dashboard?.upgrade || 'UPGRADE'}
-            </button>
+            {history[0] && !history[0].is_premium && (
+              <button 
+                onClick={() => handleUpgrade(history[0])}
+                disabled={isCheckoutLoading}
+                className="group relative px-8 py-4 bg-transparent border border-dna-toxic/30 text-dna-toxic font-esports text-[10px] tracking-widest uppercase hover:bg-dna-toxic hover:text-black transition-all duration-300 flex items-center gap-3 disabled:opacity-50"
+              >
+                {isCheckoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4" />}
+                {t.dashboard?.upgrade || 'UPGRADE'}
+              </button>
+            )}
           </div>
         </header>
 
@@ -189,12 +223,14 @@ export default function Dashboard() {
                             {t.dashboard?.downloadReport || 'DOWNLOAD'}
                           </button>
                         ) : (
-                          <Link href={`/results/${item.share_token}`}>
-                            <button className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 text-[10px] font-esports tracking-widest uppercase hover:bg-white/10 text-gray-400 transition-all">
-                               <Crown className="w-4 h-4 text-dna-purple" />
-                               UPGRADE
-                            </button>
-                          </Link>
+                          <button 
+                            onClick={() => handleUpgrade(item)}
+                            disabled={isCheckoutLoading}
+                            className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 text-[10px] font-esports tracking-widest uppercase hover:bg-white/10 text-gray-400 transition-all disabled:opacity-50"
+                          >
+                             {isCheckoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4 text-dna-purple" />}
+                             UPGRADE
+                          </button>
                         )}
                       </div>
                     </motion.div>

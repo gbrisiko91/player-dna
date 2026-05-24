@@ -119,11 +119,17 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
 
       if (response.ok) {
         setSyncStatus('success');
+        alert(lang === 'it' ? "Ruolo sincronizzato su Discord!" : "Discord role synchronized!");
       } else {
+        const errorData = await response.json();
         setSyncStatus('error');
+        alert(lang === 'it' 
+          ? `Errore: ${errorData.error || 'Verifica di essere nel server Discord'}` 
+          : `Error: ${errorData.error || 'Make sure you are in the Discord server'}`);
       }
     } catch (err) {
       setSyncStatus('error');
+      alert(lang === 'it' ? "Errore di connessione" : "Connection error");
     } finally {
       setIsSyncing(false);
     }

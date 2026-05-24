@@ -29,14 +29,18 @@ export default function QuizSystem() {
     setStep(1);
   };
 
-  const handleAnswer = (weights: any) => {
-    const newScores = { ...scores };
-    Object.keys(weights).forEach((trait) => {
-      newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
-    });
-    setScores(newScores);
+  const handleAnswer = (weights: any, optIdx: number) => {
+    setSelectingIdx(optIdx);
+    
+    setTimeout(() => {
+      const newScores = { ...scores };
+      Object.keys(weights).forEach((trait) => {
+        newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
+      });
+      setScores(newScores);
+      setSelectingIdx(null);
 
-    if (askedIndices.length < QUESTIONS.length) {
+      if (askedIndices.length < QUESTIONS.length) {
       // Logic for "propedeutic" next question:
       // Find the trait that was most affected by this answer
       const traits = Object.keys(weights);
@@ -70,6 +74,7 @@ export default function QuizSystem() {
         setStep(3);
       }, 3500);
     }
+    }, 150);
   };
 
   const saveResult = async (dna: any, finalScores: any) => {
@@ -97,6 +102,7 @@ export default function QuizSystem() {
 
   const [result, setResult] = useState<any>(null);
   const [shareToken, setShareToken] = useState<string | null>(null);
+  const [selectingIdx, setSelectingIdx] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-[#030303] flex items-center justify-center p-4 relative overflow-hidden">
@@ -168,14 +174,25 @@ export default function QuizSystem() {
                   key={idx}
                   whileHover={{ x: 10, backgroundColor: "rgba(0, 242, 255, 0.08)", borderColor: "rgba(0, 242, 255, 0.4)" }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAnswer(option.weights)}
-                  className="w-full p-8 text-left border border-white/5 bg-white/5 flex justify-between items-center group transition-all duration-300"
+                  onClick={() => handleAnswer(option.weights, idx)}
+                  disabled={selectingIdx !== null}
+                  className={`w-full p-8 text-left border flex justify-between items-center group transition-all duration-300 ${
+                    selectingIdx === idx 
+                      ? 'bg-dna-neon/20 border-dna-neon shadow-[0_0_20px_rgba(0,242,255,0.2)]' 
+                      : 'border-white/5 bg-white/5'
+                  }`}
                 >
-                  <span className="text-xl md:text-2xl font-light text-gray-400 group-hover:text-white transition-colors">
+                  <span className={`text-xl md:text-2xl font-light transition-colors ${
+                    selectingIdx === idx ? 'text-white' : 'text-gray-400 group-hover:text-white'
+                  }`}>
                     <span className="text-dna-neon/40 mr-4 font-esports text-sm">0{idx + 1}</span>
                     {lang === 'it' ? option.text_it : option.text}
                   </span>
-                  <ChevronRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all text-dna-neon" />
+                  {selectingIdx === idx ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-dna-neon" />
+                  ) : (
+                    <ChevronRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-all text-dna-neon" />
+                  )}
                 </motion.button>
               ))}
             </div>
@@ -219,18 +236,32 @@ export default function QuizSystem() {
              <ResultCard archetype={result} nickname={nickname} share_token={shareToken || undefined} />
              
              <div className="flex flex-col md:flex-row gap-6 w-full max-w-[400px]">
-               <button 
-                onClick={() => {
-                  if (shareToken) {
-                    const url = `${window.location.origin}/results/${shareToken}`;
-                    navigator.clipboard.writeText(url);
-                    alert(t.quiz.copied);
-                  }
-                }}
-                className="flex-1 py-6 bg-dna-neon text-black font-esports text-sm tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)]"
-               >
-                 {t.quiz.share}
-               </button>
+                <button 
+                 onClick={async () => {
+                   if (shareToken) {
+                     const url = `${window.location.origin}/results/${shareToken}`;
+                     const shareData = {
+                       title: 'PlayerDNA',
+                       text: `Discover my competitive DNA: ${nickname} as ${result.name}!`,
+                       url: url,
+                     };
+
+                     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                       try {
+                         await navigator.share(shareData);
+                       } catch (err) {
+                         console.error('Share failed:', err);
+                       }
+                     } else {
+                       navigator.clipboard.writeText(url);
+                       alert(t.quiz.copied);
+                     }
+                   }
+                 }}
+                 className="flex-1 py-6 bg-dna-neon text-black font-esports text-sm tracking-widest uppercase hover:bg-white transition-all shadow-[0_0_20px_rgba(0,242,255,0.4)]"
+                >
+                  {t.quiz.share}
+                </button>
                <button 
                  onClick={() => window.location.reload()}
                  className="flex-1 py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase"
