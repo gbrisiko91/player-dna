@@ -24,15 +24,39 @@ export async function GET(req: Request) {
     if (!result || error) return new Response(JSON.stringify({ error: 'Result not found' }), { status: 404 });
     if (!result.is_premium) return new Response(JSON.stringify({ error: 'Premium not purchased' }), { status: 403 });
 
-    // 2. Generazione PDF dai dati salvati
-    const pdfBytes = await generatePDF({
-      archetype_id: result.archetype_slug, // generatePDF ora cerca sia per ID che per Slug
-      lang: 'it', // Potrebbe essere salvato nel DB in futuro
-      nickname: result.nickname,
-      id: `DL-${result.share_token}`
-    });
+    let pdfBuffer: Buffer | Uint8Array;
 
-    return new Response(pdfBytes as any, {
+    // 2. Verifica se esiste già un PDF salvato (Cache)
+    if (result.pdf_url) {
+      try {
+        const response = await fetch(result.pdf_url);
+        if (response.ok) {
+          const arrayBuffer = await response.arrayBuffer();
+          pdfBuffer = Buffer.from(arrayBuffer);
+        } else {
+          throw new Error('Stored PDF not reachable');
+        }
+      } catch (cacheError) {
+        console.warn('Cache hit but fetch failed, regenerating...', cacheError);
+        // Regenerate if cache fails
+        pdfBuffer = await generatePDF({
+          archetype_id: result.archetype_slug,
+          lang: result.lang || 'en',
+          nickname: result.nickname,
+          id: `DL-${result.share_token}`
+        });
+      }
+    } else {
+      // 3. Generazione PDF dai dati salvati se non c'è cache
+      pdfBuffer = await generatePDF({
+        archetype_id: result.archetype_slug,
+        lang: result.lang || 'en',
+        nickname: result.nickname,
+        id: `DL-${result.share_token}`
+      });
+    }
+
+    return new Response(pdfBuffer as any, {
         headers: {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment; filename="PlayerDNA_Premium_Report_${result.nickname}.pdf"`,

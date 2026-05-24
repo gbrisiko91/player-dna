@@ -24,26 +24,54 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const { share_token, archetype_id, lang, nickname } = session.metadata as any;
     
-    // Genera il PDF e invia l'email in background
     try {
+      const { supabase } = await import('@/lib/supabase');
+
+      // 1. Aggiorna subito il database per sbloccare l'accesso premium
+      if (share_token) {
+        await supabase
+          .from('quiz_results')
+          .update({ is_premium: true })
+          .eq('share_token', share_token);
+      }
+
+      // 2. Genera il PDF
       const pdfBytes = await generatePDF({
         archetype_id,
         lang,
         nickname,
         id: session.id
       });
+
+      // 3. Carica il PDF su Supabase Storage (Cache)
+      let pdfUrl = '';
+      if (share_token) {
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from('reports')
+          .upload(`${share_token}.pdf`, pdfBytes, {
+            contentType: 'application/pdf',
+            upsert: true
+          });
+
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage.from('reports').getPublicUrl(`${share_token}.pdf`);
+          pdfUrl = publicUrl;
+          
+          // Salva l'URL nel DB
+          await supabase
+            .from('quiz_results')
+            .update({ pdf_url: pdfUrl })
+            .eq('share_token', share_token);
+        } else {
+          console.error('Storage upload error:', uploadError);
+        }
+      }
+
+      // 4. Invia l'email con l'allegato
       await sendPremiumEmail(session, pdfBytes);
       
-      // Aggiorna il database per segnare il report come premium
-      if (share_token) {
-        const { supabase } = await import('@/lib/supabase');
-        await supabase
-          .from('quiz_results')
-          .update({ is_premium: true })
-          .eq('share_token', share_token);
-      }
-      
-      console.log(`Email sent and DB updated for session ${session.id}`);
+      console.log(`Webhook processed successfully for session ${session.id}`);
     } catch (error) {
       console.error('Failed to process post-checkout actions:', error);
     }

@@ -84,7 +84,8 @@ export default function QuizSystem() {
           nickname: nickname,
           archetype_slug: dna.slug, 
           scores: finalScores, 
-          share_token: token 
+          share_token: token,
+          lang: lang
         }
       ])
       .select();

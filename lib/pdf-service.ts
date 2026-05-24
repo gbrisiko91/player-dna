@@ -1,11 +1,8 @@
-import Stripe from 'stripe';
 import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
 import { ARCHETYPES } from '@/lib/data';
 import { Resend } from 'resend';
-
-const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-04-10' as any,
-});
+import fs from 'fs';
+import path from 'path';
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY);
 
@@ -19,6 +16,31 @@ const COLORS = {
   gray: rgb(0.2, 0.2, 0.25),
   dim: rgb(0.05, 0.05, 0.08),
 };
+
+// URLs per i font (fallback se non trovati in locale)
+const FONT_URLS = {
+  bold: 'https://github.com/google/fonts/raw/main/ofl/orbitron/static/Orbitron-Bold.ttf',
+  regular: 'https://github.com/google/fonts/raw/main/ofl/orbitron/static/Orbitron-Regular.ttf'
+};
+
+async function loadFont(pdfDoc: PDFDocument, type: 'bold' | 'regular') {
+  try {
+    // Prova a caricare dal filesystem (se presente in lib/fonts/)
+    const localPath = path.join(process.cwd(), 'lib', 'fonts', type === 'bold' ? 'Orbitron-Bold.ttf' : 'Orbitron-Regular.ttf');
+    if (fs.existsSync(localPath)) {
+      const fontBytes = fs.readFileSync(localPath);
+      return await pdfDoc.embedFont(fontBytes);
+    }
+    
+    // Fallback: Fetch remoto (lento ma garantisce il risultato)
+    const resp = await fetch(FONT_URLS[type]);
+    const fontBytes = await resp.arrayBuffer();
+    return await pdfDoc.embedFont(fontBytes);
+  } catch (err) {
+    console.warn(`Could not load custom font ${type}, falling back to Helvetica:`, err);
+    return await pdfDoc.embedFont(type === 'bold' ? StandardFonts.HelveticaBold : StandardFonts.Helvetica);
+  }
+}
 
 export async function generatePDF(data: { archetype_id: string, lang: string, nickname: string, id: string }) {
     const { archetype_id, lang, nickname, id } = data;
@@ -35,8 +57,10 @@ export async function generatePDF(data: { archetype_id: string, lang: string, ni
     const themeColor = archetype.color ? hexToRgb(archetype.color) : COLORS.neon;
     
     const pdfDoc = await PDFDocument.create();
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    
+    // Caricamento Font Cyberpunk
+    const fontBold = await loadFont(pdfDoc, 'bold');
+    const fontRegular = await loadFont(pdfDoc, 'regular');
     const fontMono = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
     // --- PAGE 1 ---
@@ -48,18 +72,18 @@ export async function generatePDF(data: { archetype_id: string, lang: string, ni
     page1.drawText('CONFIDENTIAL', { x: 450, y: 780, size: 10, font: fontMono, color: COLORS.danger });
 
     page1.drawText(isIt ? 'SOGGETTO:' : 'SUBJECT:', { x: 50, y: 745, size: 12, font: fontMono, color: themeColor });
-    page1.drawText(nickname.toUpperCase(), { x: 50, y: 700, size: 48, font: fontBold, color: COLORS.white });
+    page1.drawText(nickname.toUpperCase(), { x: 50, y: 700, size: 40, font: fontBold, color: COLORS.white });
     
     const arcName = archetype.name.toUpperCase();
     page1.drawText(isIt ? 'DESIGNAZIONE:' : 'DESIGNATION:', { x: 50, y: 660, size: 10, font: fontMono, color: themeColor });
-    page1.drawText(arcName, { x: 50, y: 630, size: 32, font: fontBold, color: themeColor });
+    page1.drawText(arcName, { x: 50, y: 630, size: 28, font: fontBold, color: themeColor });
 
     drawTechBox(page1, 50, 420, 495, 185, fontMono, isIt ? "CORE ANALYSIS" : "CORE ANALYSIS", themeColor);
     const fullAnalysis = isIt 
         ? `${archetype.description_it}\n\n${archetype.motivation_it}\n\nImpatto Neurale: Il soggetto mostra una predisposizione unica per ${archetype.name_it.toLowerCase()}, con pattern sinaptici che favoriscono l'esecuzione sotto stress e la dominanza spaziale.`
         : `${archetype.description}\n\n${archetype.motivation}\n\nNeural Impact: The subject demonstrates a unique predisposition for ${archetype.name.toLowerCase()} gameplay, with synaptic patterns favoring execution under stress and spatial dominance.`;
     
-    drawWrappedText(page1, fullAnalysis, 70, 575, 455, 11, fontRegular, COLORS.white);
+    drawWrappedText(page1, fullAnalysis, 70, 575, 455, 10, fontRegular, COLORS.white);
 
     page1.drawText(isIt ? 'MATRICE PSICOMETRICA:' : 'PSYCHOMETRIC MATRIX:', { x: 50, y: 385, size: 10, font: fontMono, color: themeColor });
     const traitValues = [archetype.traits.ego, archetype.traits.clutch, archetype.traits.toxic, archetype.traits.tactics, archetype.traits.resilience];
@@ -80,14 +104,14 @@ export async function generatePDF(data: { archetype_id: string, lang: string, ni
     drawHUD(page2, fontMono, "DOSS_02/02", themeColor);
 
     page2.drawText(isIt ? 'POSIZIONAMENTO GLOBALE' : 'GLOBAL POPULATION RANKING', { x: 50, y: 780, size: 12, font: fontBold, color: COLORS.white });
-    page2.drawText(`TOP ${archetype.rarity}%`, { x: 50, y: 710, size: 85, font: fontBold, color: themeColor });
+    page2.drawText(`TOP ${archetype.rarity}%`, { x: 50, y: 710, size: 75, font: fontBold, color: themeColor });
     page2.drawText(isIt ? 'PERCENTUALE DI RARITÀ RILEVATA' : 'RARITY PERCENTILE DETECTED', { x: 55, y: 690, size: 10, font: fontMono, color: COLORS.white });
 
     drawTechBox(page2, 50, 480, 495, 165, fontMono, isIt ? "OPTIMIZATION VECTORS" : "OPTIMIZATION VECTORS", themeColor);
     const recommendation = isIt 
         ? "• Sfrutta la tua dominanza naturale per dettare il ritmo del match.\n• Identifica i trigger emotivi che precedono la desincronizzazione cognitiva.\n• Ottimizza i tempi di recupero post-match per prevenire il 'neural burnout'.\n• Coordina i compagni di squadra utilizzando la tua specifica impronta tattica."
         : "• Leverage your natural dominance to dictate the match tempo.\n• Identify emotional triggers that precede cognitive desynchronization.\n• Optimize post-match recovery times to prevent 'neural burnout'.\n• Coordinate teammates using your specific tactical footprint.";
-    drawWrappedText(page2, recommendation, 70, 610, 455, 11, fontRegular, COLORS.white);
+    drawWrappedText(page2, recommendation, 70, 610, 455, 10, fontRegular, COLORS.white);
 
     const certId = `DNA-CERT-${id.substring(id.length - 8).toUpperCase()}`;
     drawComplexSeal(page2, 297, 305, 200, nickname, fontBold, fontMono, certId, themeColor);
