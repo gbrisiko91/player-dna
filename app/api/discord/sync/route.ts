@@ -65,6 +65,14 @@ export async function POST(req: Request) {
     if (!assignResponse.ok) {
       const errorData = await assignResponse.json();
       console.error("Error assigning role:", errorData);
+      
+      if (assignResponse.status === 404) {
+        return NextResponse.json({ error: "User not found in Discord server. Make sure you joined!" }, { status: 404 });
+      }
+      if (assignResponse.status === 403) {
+        return NextResponse.json({ error: "Bot permissions error. Bot role must be higher than archetype roles." }, { status: 403 });
+      }
+      
       return NextResponse.json({ error: "Failed to assign role" }, { status: 500 });
     }
 

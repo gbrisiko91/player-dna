@@ -35,46 +35,47 @@ export default function QuizSystem() {
     setTimeout(() => {
       const newScores = { ...scores };
       Object.keys(weights).forEach((trait) => {
-        newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + weights[trait]));
+        // @ts-ignore
+        newScores[trait] = Math.min(100, Math.max(0, newScores[trait] + (weights[trait] || 0)));
       });
       setScores(newScores);
       setSelectingIdx(null);
 
       if (askedIndices.length < QUESTIONS.length) {
-      // Logic for "propedeutic" next question:
-      // Find the trait that was most affected by this answer
-      const traits = Object.keys(weights);
-      const mainTrait = traits.length > 0 ? traits[0] : null;
+        // Logica per scegliere la domanda successiva in base al tratto dominante
+        const mainTrait = Object.entries(weights).reduce((a, b) => (b[1] as number) > (a[1] as number) ? b : a)[0];
+        const remaining = QUESTIONS.map((_, i) => i).filter(i => !askedIndices.includes(i));
+        
+        if (remaining.length === 0) {
+          setIsFinalizing(true);
+          setTimeout(async () => {
+            const dna = calculateDNA(newScores);
+            setResult(dna);
+            await saveResult(dna, newScores);
+            setStep(3);
+          }, 3500);
+          return;
+        }
 
-      const remaining = QUESTIONS.map((_, i) => i).filter(i => !askedIndices.includes(i));
-      
-      let nextIdx;
-      if (mainTrait) {
-        // Try to find a question that also touches this trait
         const related = remaining.filter(i => 
           QUESTIONS[i].options.some(opt => Object.keys(opt.weights).includes(mainTrait))
         );
-        if (related.length > 0) {
-          nextIdx = related[Math.floor(Math.random() * related.length)];
-        } else {
-          nextIdx = remaining[Math.floor(Math.random() * remaining.length)];
-        }
-      } else {
-        nextIdx = remaining[Math.floor(Math.random() * remaining.length)];
-      }
+        
+        const nextIdx = related.length > 0 
+          ? related[Math.floor(Math.random() * related.length)]
+          : remaining[Math.floor(Math.random() * remaining.length)];
 
-      setCurrentQuestionIndex(nextIdx);
-      setAskedIndices([...askedIndices, nextIdx]);
-    } else {
-      setStep(2);
-      setTimeout(async () => {
-        const dna = calculateDNA(newScores);
-        setResult(dna);
-        await saveResult(dna, newScores);
-        setStep(3);
-      }, 3500);
-    }
-    }, 150);
+        setAskedIndices([...askedIndices, nextIdx]);
+      } else {
+        setIsFinalizing(true);
+        setTimeout(async () => {
+          const dna = calculateDNA(newScores);
+          setResult(dna);
+          await saveResult(dna, newScores);
+          setStep(3);
+        }, 3500);
+      }
+    }, 400); // Aumentato a 400ms per feedback visivo chiaro su mobile
   };
 
   const saveResult = async (dna: any, finalScores: any) => {
@@ -95,7 +96,11 @@ export default function QuizSystem() {
       ])
       .select();
 
-    if (!error) {
+    if (error) {
+      console.error("Save Error:", error);
+      // Fallback for sharing if DB fails (won't be persistent but button will work)
+      setShareToken(token); 
+    } else {
       setShareToken(token);
     }
   };

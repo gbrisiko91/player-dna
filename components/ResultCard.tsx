@@ -99,7 +99,14 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
 
   const handleSyncDiscord = async () => {
     if (!user) {
-      alert("Please login with Discord first!");
+      alert(lang === 'it' ? "Per favore, effettua prima il login con Discord!" : "Please login with Discord first!");
+      return;
+    }
+
+    if (user.app_metadata?.provider !== 'discord') {
+      alert(lang === 'it' 
+        ? "Questa funzione richiede il login con Discord. Disconnettiti e rientra usando Discord." 
+        : "This feature requires Discord login. Please logout and sign in again with Discord.");
       return;
     }
     
