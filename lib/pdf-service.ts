@@ -1,4 +1,5 @@
-import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import { ARCHETYPES } from '@/lib/data';
 import { Resend } from 'resend';
 import fs from 'fs';
@@ -19,12 +20,13 @@ const COLORS = {
 
 // URLs per i font (fallback se non trovati in locale)
 const FONT_URLS = {
-  bold: 'https://github.com/google/fonts/raw/main/ofl/orbitron/static/Orbitron-Bold.ttf',
-  regular: 'https://github.com/google/fonts/raw/main/ofl/orbitron/static/Orbitron-Regular.ttf'
+  bold: 'https://fastly.jsdelivr.net/gh/google/fonts@main/ofl/orbitron/static/Orbitron-Bold.ttf',
+  regular: 'https://fastly.jsdelivr.net/gh/google/fonts@main/ofl/orbitron/static/Orbitron-Regular.ttf'
 };
 
 async function loadFont(pdfDoc: PDFDocument, type: 'bold' | 'regular') {
   try {
+    pdfDoc.registerFontkit(fontkit);
     // Prova a caricare dal filesystem (se presente in lib/fonts/)
     const localPath = path.join(process.cwd(), 'lib', 'fonts', type === 'bold' ? 'Orbitron-Bold.ttf' : 'Orbitron-Regular.ttf');
     if (fs.existsSync(localPath)) {
