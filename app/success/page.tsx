@@ -66,6 +66,20 @@ function SuccessContent() {
     }
   };
 
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/results/${sessionId}`; 
+    navigator.clipboard.writeText(shareUrl);
+    
+    const btn = document.getElementById('share-btn');
+    if (btn) {
+      const originalText = btn.innerHTML;
+      btn.innerText = t.quiz.copied;
+      setTimeout(() => { 
+        if (btn) btn.innerHTML = originalText; 
+      }, 2000);
+    }
+  };
+
   return (
     <div className="relative z-10 w-full max-w-4xl bg-black/60 border border-white/10 p-8 md:p-16 backdrop-blur-xl">
       {status === "loading" ? (
@@ -99,7 +113,11 @@ function SuccessContent() {
               <div className="absolute -top-2 -right-2 bg-dna-danger text-white text-[8px] px-2 py-1">{t.success.premium}</div>
             </button>
             
-            <button className="py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase flex items-center justify-center gap-3">
+            <button 
+              id="share-btn"
+              onClick={handleShare}
+              className="py-6 border border-white/10 hover:bg-white/5 font-esports text-sm tracking-widest uppercase flex items-center justify-center gap-3 transition-all"
+            >
               <Share2 className="w-5 h-5" />
               {t.success.share}
             </button>
