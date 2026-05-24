@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, PDFPage } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import { ARCHETYPES } from '@/lib/data';
 import { Resend } from 'resend';
