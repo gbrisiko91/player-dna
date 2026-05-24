@@ -293,7 +293,7 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
           </>
         ) : (
           <button
-            onClick={handleUpgrade}
+            onClick={handleCheckout}
             disabled={isCheckoutLoading}
             className="w-full py-6 bg-gradient-to-r from-dna-purple to-dna-danger text-white font-esports text-sm tracking-[0.3em] uppercase hover:scale-[1.02] transition-all duration-300 relative group overflow-hidden disabled:opacity-50"
           >
