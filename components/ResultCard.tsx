@@ -283,7 +283,7 @@ export default function ResultCard({ archetype, nickname, share_token, is_premiu
               {isReportDownloading ? (t.result?.processing || 'Processing...') : (t.dashboard?.downloadReport || 'DOWNLOAD REPORT')}
             </button>
             <button 
-              onClick={handleCardDownload}
+              onClick={handleDownload}
               disabled={isDownloading}
               className="w-full py-5 border border-white/20 hover:bg-white hover:text-black font-esports text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
